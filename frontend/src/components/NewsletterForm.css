@@ -1,0 +1,92 @@
+/* =====================================================
+   Newsletter Form Styles
+   ===================================================== */
+
+.newsletter-form {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.newsletter-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+@media (min-width: 600px) {
+  .newsletter-inputs {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+  
+  .newsletter-inputs .form-group {
+    flex: 1;
+    margin-bottom: 0;
+  }
+  
+  .newsletter-inputs .btn {
+    flex-shrink: 0;
+  }
+}
+
+.newsletter-inputs .form-input {
+  background: var(--color-surface);
+}
+
+.form-error-inline {
+  color: #991B1B;
+  font-size: 0.875rem;
+  margin-top: var(--space-sm);
+  text-align: center;
+}
+
+/* =====================================================
+   Newsletter Success State
+   ===================================================== */
+
+.newsletter-success {
+  text-align: center;
+  padding: var(--space-xl);
+  background: rgba(168, 197, 168, 0.1);
+  border-radius: var(--radius-lg);
+  animation: fadeIn 0.5s ease-out;
+}
+
+.success-leaf {
+  font-size: 3rem;
+  margin-bottom: var(--space-md);
+  animation: sway 3s ease-in-out infinite;
+}
+
+@keyframes sway {
+  0%, 100% { transform: rotate(-5deg); }
+  50% { transform: rotate(5deg); }
+}
+
+.newsletter-success h3 {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  color: var(--calm-deep);
+  margin-bottom: var(--space-md);
+}
+
+.newsletter-success p {
+  color: var(--color-text-muted);
+  font-size: 1rem;
+  max-width: 450px;
+  margin: 0 auto var(--space-md);
+  font-style: italic;
+}
+
+.success-note {
+  font-size: 0.875rem !important;
+  font-style: normal !important;
+  color: var(--calm-sage-dark) !important;
+  font-weight: 500;
+}
+
+/* Spinner in button */
+.newsletter-form .spinner {
+  width: 16px;
+  height: 16px;
+}

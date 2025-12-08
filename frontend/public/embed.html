@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Planet Calm - Embeddable Map</title>
+  
+  <!-- Mapbox GL JS -->
+  <script src="https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.js"></script>
+  <link href="https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.css" rel="stylesheet" />
+  
+  <!-- Socket.io Client -->
+  <script src="https://cdn.socket.io/4.6.0/socket.io.min.js"></script>
+  
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Nunito+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    :root {
+      --calm-sage: #A8C5A8;
+      --calm-sage-dark: #7BA37B;
+      --calm-cream: #F5F2EB;
+      --calm-deep: #2C3E2D;
+      --calm-mist: #E8E4DD;
+    }
+    
+    body {
+      font-family: 'Nunito Sans', sans-serif;
+      background: transparent;
+    }
+    
+    .embed-wrapper {
+      position: relative;
+      width: 100%;
+      min-height: 100vh;
+      background: linear-gradient(135deg, var(--calm-cream) 0%, var(--calm-mist) 100%);
+    }
+    
+    /* Background decorations */
+    .bg-decoration {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+    }
+    
+    .bg-decoration-1 {
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(168, 197, 168, 0.3) 0%, transparent 70%);
+      top: -50px;
+      right: -50px;
+      animation: float 20s ease-in-out infinite;
+    }
+    
+    .bg-decoration-2 {
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(circle, rgba(184, 212, 227, 0.3) 0%, transparent 70%);
+      bottom: 10%;
+      left: -30px;
+      animation: float 25s ease-in-out infinite reverse;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      33% { transform: translateY(-15px) rotate(2deg); }
+      66% { transform: translateY(10px) rotate(-2deg); }
+    }
+    
+    .embed-container {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      min-height: 500px;
+      max-height: 800px;
+      padding: 20px;
+      z-index: 1;
+    }
+    
+    .map-wrapper {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 
+        0 25px 50px -12px rgba(44, 62, 45, 0.15),
+        0 0 0 1px rgba(255, 255, 255, 0.5);
+    }
+    
+    #map {
+      width: 100%;
+      height: 100%;
+    }
+    
+    /* Header overlay with title */
+    .map-header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      padding: 20px;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0) 100%);
+      z-index: 10;
+      text-align: center;
+    }
+    
+    .map-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5rem;
+      font-weight: 400;
+      color: var(--calm-deep);
+      margin-bottom: 4px;
+    }
+    
+    .map-subtitle {
+      font-size: 0.8rem;
+      color: #5A6B5C;
+      font-style: italic;
+    }
+    
+    /* Counter Overlay */
+    .counter-overlay {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 16px 24px;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(44, 62, 45, 0.1);
+      text-align: center;
+      z-index: 10;
+    }
+    
+    .counter-icon {
+      font-size: 1.5rem;
+      margin-bottom: 4px;
+    }
+    
+    .counter-number {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.5rem;
+      font-weight: 400;
+      color: var(--calm-deep);
+      line-height: 1;
+    }
+    
+    .counter-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #5A6B5C;
+      margin-top: 4px;
+    }
+    
+    /* New Member Toast */
+    .new-member-toast {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--calm-deep);
+      color: var(--calm-cream);
+      padding: 12px 24px;
+      border-radius: 50px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 10px 30px rgba(44, 62, 45, 0.2);
+      z-index: 10;
+      opacity: 0;
+      transition: all 0.4s ease;
+    }
+    
+    .new-member-toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+    
+    .toast-emoji {
+      font-size: 1.5rem;
+    }
+    
+    .toast-content {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .toast-title {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      opacity: 0.8;
+    }
+    
+    .toast-text {
+      font-size: 0.95rem;
+      font-weight: 500;
+    }
+    
+    /* Connection Indicator */
+    .connection-indicator {
+      position: absolute;
+      top: 70px;
+      right: 20px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 8px 14px;
+      border-radius: 50px;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #5A6B5C;
+      z-index: 10;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--calm-sage);
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    
+    .pulse-dot.disconnected {
+      background: #EF4444;
+      animation: none;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.2); }
+    }
+    
+    /* Mapbox Popup */
+    .mapboxgl-popup-content {
+      background: #fff;
+      border-radius: 12px;
+      padding: 0;
+      box-shadow: 0 10px 30px rgba(44, 62, 45, 0.15);
+      min-width: 180px;
+    }
+    
+    .popup-content {
+      padding: 16px;
+      text-align: center;
+    }
+    
+    .popup-pet-icon {
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+    
+    .popup-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.25rem;
+      font-weight: 500;
+      color: var(--calm-deep);
+      margin-bottom: 4px;
+    }
+    
+    .popup-type {
+      font-size: 0.8rem;
+      color: var(--calm-sage-dark);
+      font-weight: 500;
+      background: rgba(168, 197, 168, 0.2);
+      padding: 4px 10px;
+      border-radius: 20px;
+      display: inline-block;
+      margin-bottom: 6px;
+    }
+    
+    .popup-location {
+      font-size: 0.75rem;
+      color: #7A8B7C;
+    }
+    
+    .mapboxgl-ctrl-logo {
+      display: none !important;
+    }
+    
+    /* Pet images decorations */
+    .pet-decoration {
+      position: absolute;
+      border-radius: 50%;
+      overflow: hidden;
+      opacity: 0.1;
+      pointer-events: none;
+      z-index: 0;
+    }
+    
+    .pet-decoration img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .pet-decoration-1 {
+      width: 120px;
+      height: 120px;
+      top: 10%;
+      left: 5%;
+      animation: float 15s ease-in-out infinite;
+    }
+    
+    .pet-decoration-2 {
+      width: 80px;
+      height: 80px;
+      bottom: 15%;
+      right: 5%;
+      animation: float 18s ease-in-out infinite reverse;
+    }
+  </style>
+</head>
+<body>
+  <div class="embed-wrapper">
+    <!-- Background decorations -->
+    <div class="bg-decoration bg-decoration-1"></div>
+    <div class="bg-decoration bg-decoration-2"></div>
+    
+    <!-- Pet image decorations -->
+    <div class="pet-decoration pet-decoration-1">
+      <img src="https://images.unsplash.com/photo-1587300003388-59208cc962cb?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" alt="">
+    </div>
+    <div class="pet-decoration pet-decoration-2">
+      <img src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" alt="">
+    </div>
+    
+    <div class="embed-container">
+      <div class="map-wrapper">
+        <div id="map"></div>
+        
+        <!-- Header -->
+        <div class="map-header">
+          <h1 class="map-title">🌍 Planet Calm Community</h1>
+          <p class="map-subtitle">Every pin is a heart choosing calm</p>
+        </div>
+        
+        <div class="counter-overlay">
+          <div class="counter-icon">🐾</div>
+          <div class="counter-number" id="memberCount">0</div>
+          <div class="counter-label">hearts choosing calm</div>
+        </div>
+        
+        <div class="connection-indicator">
+          <span class="pulse-dot" id="connectionDot"></span>
+          <span id="connectionText">Connecting...</span>
+        </div>
+        
+        <div class="new-member-toast" id="newMemberToast">
+          <span class="toast-emoji" id="toastEmoji">🐕</span>
+          <div class="toast-content">
+            <span class="toast-title">New member!</span>
+            <span class="toast-text" id="toastText">Someone just joined!</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // =====================================================
+    // CONFIGURATION - Update these values
+    // =====================================================
+    const CONFIG = {
+      // Your Mapbox access token
+      MAPBOX_TOKEN: 'YOUR_MAPBOX_TOKEN_HERE',
+      
+      // Your backend API URL
+      API_URL: 'https://your-backend-url.com',
+      
+      // Socket.io URL (usually same as API_URL)
+      SOCKET_URL: 'https://your-backend-url.com'
+    };
+    // =====================================================
+
+    // Pet type to emoji mapping
+    const PET_EMOJIS = {
+      Dog: '🐕',
+      Cat: '🐱',
+      Bird: '🐦',
+      Fish: '🐠',
+      Rabbit: '🐰',
+      Hamster: '🐹',
+      Horse: '🐴',
+      Reptile: '🦎',
+      Other: '🐾'
+    };
+
+    // Pet type to color mapping
+    const PET_COLORS = {
+      Dog: '#A8C5A8',
+      Cat: '#B8D4E3',
+      Bird: '#E8C5A8',
+      Fish: '#A8B8D4',
+      Rabbit: '#D4C5E8',
+      Hamster: '#E8D4C5',
+      Horse: '#8B7355',
+      Reptile: '#7BA37B',
+      Other: '#C5C5C5'
+    };
+
+    // Initialize Mapbox
+    mapboxgl.accessToken = CONFIG.MAPBOX_TOKEN;
+
+    const map = new mapboxgl.Map({
+      container: 'map',
+      style: 'mapbox://styles/mapbox/light-v11',
+      center: [0, 20],
+      zoom: 1.5,
+      minZoom: 1,
+      maxZoom: 15,
+      dragRotate: false,
+      touchPitch: false
+    });
+
+    // Add navigation controls
+    map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'bottom-right');
+
+    // DOM elements
+    const memberCountEl = document.getElementById('memberCount');
+    const connectionDot = document.getElementById('connectionDot');
+    const connectionText = document.getElementById('connectionText');
+    const newMemberToast = document.getElementById('newMemberToast');
+    const toastEmoji = document.getElementById('toastEmoji');
+    const toastText = document.getElementById('toastText');
+
+    let toastTimeout;
+
+    // Show new member toast
+    function showNewMemberToast(member) {
+      toastEmoji.textContent = PET_EMOJIS[member.petType] || '🐾';
+      toastText.textContent = `${member.petName} just joined from ${member.location?.formatted || member.location?.city || 'somewhere'}!`;
+      newMemberToast.classList.add('show');
+      
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        newMemberToast.classList.remove('show');
+      }, 4000);
+    }
+
+    // Update connection status
+    function updateConnectionStatus(connected) {
+      if (connected) {
+        connectionDot.classList.remove('disconnected');
+        connectionText.textContent = 'Live';
+      } else {
+        connectionDot.classList.add('disconnected');
+        connectionText.textContent = 'Offline';
+      }
+    }
+
+    // Map loaded event
+    map.on('load', () => {
+      // Add source for members
+      map.addSource('members', {
+        type: 'geojson',
+        data: { type: 'FeatureCollection', features: [] },
+        cluster: true,
+        clusterMaxZoom: 10,
+        clusterRadius: 50
+      });
+
+      // Cluster circles
+      map.addLayer({
+        id: 'clusters',
+        type: 'circle',
+        source: 'members',
+        filter: ['has', 'point_count'],
+        paint: {
+          'circle-color': [
+            'step', ['get', 'point_count'],
+            '#A8C5A8', 10,
+            '#7BA37B', 50,
+            '#5A8B5A', 100,
+            '#2C3E2D'
+          ],
+          'circle-radius': [
+            'step', ['get', 'point_count'],
+            20, 10, 30, 50, 40, 100, 50
+          ],
+          'circle-stroke-width': 3,
+          'circle-stroke-color': '#fff',
+          'circle-opacity': 0.9
+        }
+      });
+
+      // Cluster count labels
+      map.addLayer({
+        id: 'cluster-count',
+        type: 'symbol',
+        source: 'members',
+        filter: ['has', 'point_count'],
+        layout: {
+          'text-field': '{point_count_abbreviated}',
+          'text-font': ['DIN Pro Medium', 'Arial Unicode MS Bold'],
+          'text-size': 14
+        },
+        paint: { 'text-color': '#fff' }
+      });
+
+      // Individual pins
+      map.addLayer({
+        id: 'unclustered-point',
+        type: 'circle',
+        source: 'members',
+        filter: ['!', ['has', 'point_count']],
+        paint: {
+          'circle-color': [
+            'match', ['get', 'petType'],
+            'Dog', '#A8C5A8',
+            'Cat', '#B8D4E3',
+            'Bird', '#E8C5A8',
+            'Fish', '#A8B8D4',
+            'Rabbit', '#D4C5E8',
+            'Hamster', '#E8D4C5',
+            'Horse', '#8B7355',
+            'Reptile', '#7BA37B',
+            '#C5C5C5'
+          ],
+          'circle-radius': 10,
+          'circle-stroke-width': 3,
+          'circle-stroke-color': '#fff',
+          'circle-opacity': 0.9
+        }
+      });
+
+      // Click handlers
+      map.on('click', 'clusters', (e) => {
+        const features = map.queryRenderedFeatures(e.point, { layers: ['clusters'] });
+        const clusterId = features[0].properties.cluster_id;
+        map.getSource('members').getClusterExpansionZoom(clusterId, (err, zoom) => {
+          if (err) return;
+          map.easeTo({ center: features[0].geometry.coordinates, zoom });
+        });
+      });
+
+      map.on('click', 'unclustered-point', (e) => {
+        const { petName, petType, location } = e.features[0].properties;
+        const coordinates = e.features[0].geometry.coordinates.slice();
+        const emoji = PET_EMOJIS[petType] || '🐾';
+
+        new mapboxgl.Popup({ closeButton: false })
+          .setLngLat(coordinates)
+          .setHTML(`
+            <div class="popup-content">
+              <div class="popup-pet-icon">${emoji}</div>
+              <div class="popup-name">${petName}</div>
+              <div class="popup-type">${petType}</div>
+              <div class="popup-location">${location}</div>
+            </div>
+          `)
+          .addTo(map);
+      });
+
+      // Cursor changes
+      map.on('mouseenter', 'clusters', () => map.getCanvas().style.cursor = 'pointer');
+      map.on('mouseleave', 'clusters', () => map.getCanvas().style.cursor = '');
+      map.on('mouseenter', 'unclustered-point', () => map.getCanvas().style.cursor = 'pointer');
+      map.on('mouseleave', 'unclustered-point', () => map.getCanvas().style.cursor = '');
+
+      // Fetch initial data
+      fetchMembers();
+      
+      // Connect to Socket.io
+      connectSocket();
+    });
+
+    // Fetch members from API
+    async function fetchMembers() {
+      try {
+        const response = await fetch(`${CONFIG.API_URL}/api/members`);
+        const data = await response.json();
+        
+        if (data.success && data.data) {
+          map.getSource('members').setData(data.data);
+          memberCountEl.textContent = data.count.toLocaleString();
+        }
+      } catch (error) {
+        console.error('Error fetching members:', error);
+      }
+    }
+
+    // Connect to Socket.io for real-time updates
+    function connectSocket() {
+      const socket = io(CONFIG.SOCKET_URL, {
+        transports: ['websocket', 'polling'],
+        reconnection: true,
+        reconnectionAttempts: 10
+      });
+
+      socket.on('connect', () => {
+        console.log('🔌 Socket connected');
+        updateConnectionStatus(true);
+      });
+
+      socket.on('disconnect', () => {
+        console.log('🔌 Socket disconnected');
+        updateConnectionStatus(false);
+      });
+
+      // Handle new member - THIS IS THE KEY REAL-TIME UPDATE
+      socket.on('new-member', (member) => {
+        console.log('📍 New member:', member);
+        
+        // Get current data
+        const source = map.getSource('members');
+        const currentData = source._data || { type: 'FeatureCollection', features: [] };
+        
+        // Add new feature
+        const newFeature = {
+          type: 'Feature',
+          geometry: {
+            type: 'Point',
+            coordinates: member.coordinates.coordinates
+          },
+          properties: {
+            id: member.id,
+            petName: member.petName,
+            petType: member.petType,
+            location: member.location?.formatted || member.location,
+            createdAt: member.createdAt
+          }
+        };
+        
+        currentData.features.unshift(newFeature);
+        source.setData(currentData);
+        
+        // Show toast notification
+        showNewMemberToast(member);
+        
+        // Fly to new pin
+        map.flyTo({
+          center: member.coordinates.coordinates,
+          zoom: 5,
+          duration: 2000
+        });
+      });
+
+      // Handle member count update
+      socket.on('member-count', ({ count }) => {
+        memberCountEl.textContent = count.toLocaleString();
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,505 @@
+/* =====================================================
+   Map Container - Vibrant Theme
+   ===================================================== */
+
+.map-container {
+  position: relative;
+  width: 100%;
+  height: 600px;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: 
+    0 25px 60px -12px rgba(0, 0, 0, 0.25),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.map {
+  width: 100%;
+  height: 100%;
+}
+
+/* =====================================================
+   Custom Pet Markers
+   ===================================================== */
+
+.custom-marker {
+  cursor: pointer;
+  z-index: 1;
+}
+
+.marker-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.marker-icon {
+  width: 44px;
+  height: 44px;
+  background: var(--marker-color, #FF6B6B);
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 
+    0 4px 15px rgba(0, 0, 0, 0.3),
+    0 0 0 3px white,
+    0 0 0 5px var(--marker-color, #FF6B6B);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  font-size: 1.4rem;
+}
+
+.marker-icon::before {
+  content: attr(data-icon);
+  transform: rotate(45deg);
+}
+
+/* Inner emoji needs to rotate back */
+.marker-container .marker-icon {
+  font-size: 0; /* Hide default text */
+}
+
+.marker-container .marker-icon::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: rotate(45deg);
+  font-size: 1.4rem;
+}
+
+/* Recreate inner content */
+.custom-marker .marker-icon {
+  position: relative;
+}
+
+.custom-marker .marker-icon > span,
+.custom-marker .marker-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Fix emoji rotation */
+.marker-container {
+  font-size: 1.5rem;
+}
+
+.marker-container .marker-icon {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+/* Emoji inside marker */
+.marker-icon {
+  font-size: 1.5rem !important;
+}
+
+/* Pulse animation */
+.marker-pulse {
+  position: absolute;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--marker-color, #FF6B6B);
+  opacity: 0;
+  animation: marker-pulse 2s ease-out infinite;
+  z-index: -1;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+@keyframes marker-pulse {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.5;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2.5);
+    opacity: 0;
+  }
+}
+
+/* Hover state */
+.custom-marker:hover .marker-icon {
+  transform: rotate(-45deg) scale(1.15);
+  box-shadow: 
+    0 8px 25px rgba(0, 0, 0, 0.4),
+    0 0 0 3px white,
+    0 0 0 6px var(--marker-color, #FF6B6B);
+}
+
+/* New marker animation */
+.custom-marker.new-marker .marker-icon {
+  animation: bounce-in 0.6s ease, glow 1s ease-in-out infinite alternate;
+}
+
+.custom-marker.new-marker .marker-pulse {
+  animation: marker-pulse 1s ease-out infinite;
+}
+
+@keyframes bounce-in {
+  0% { transform: rotate(-45deg) scale(0); }
+  50% { transform: rotate(-45deg) scale(1.3); }
+  100% { transform: rotate(-45deg) scale(1); }
+}
+
+@keyframes glow {
+  from {
+    box-shadow: 
+      0 4px 15px rgba(0, 0, 0, 0.3),
+      0 0 0 3px white,
+      0 0 0 5px var(--marker-color, #FF6B6B),
+      0 0 20px var(--marker-color, #FF6B6B);
+  }
+  to {
+    box-shadow: 
+      0 4px 15px rgba(0, 0, 0, 0.3),
+      0 0 0 3px white,
+      0 0 0 8px var(--marker-color, #FF6B6B),
+      0 0 40px var(--marker-color, #FF6B6B);
+  }
+}
+
+/* =====================================================
+   Popup Styles - Colorful
+   ===================================================== */
+
+.mapboxgl-popup-content {
+  padding: 0 !important;
+  border-radius: 16px !important;
+  overflow: hidden;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2) !important;
+  min-width: 200px;
+}
+
+.mapboxgl-popup-tip {
+  border-top-color: white !important;
+}
+
+.popup-content {
+  padding: 20px;
+  text-align: center;
+  background: white;
+}
+
+.popup-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  margin: 0 auto 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.popup-name {
+  font-family: var(--font-display, 'Georgia', serif);
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #2d3436;
+  margin-bottom: 8px;
+}
+
+.popup-badge {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.popup-location {
+  font-size: 0.85rem;
+  color: #636e72;
+}
+
+.mapboxgl-popup-close-button {
+  font-size: 20px;
+  padding: 8px 12px;
+  color: #636e72;
+  background: transparent;
+  border: none;
+  right: 5px;
+  top: 5px;
+}
+
+.mapboxgl-popup-close-button:hover {
+  background: #f1f2f6;
+  border-radius: 50%;
+  color: #2d3436;
+}
+
+/* =====================================================
+   Counter Overlay - Vibrant
+   ===================================================== */
+
+.map-counter {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 16px 24px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+  text-align: center;
+  z-index: 10;
+}
+
+.counter-icon {
+  font-size: 1.5rem;
+  margin-bottom: 4px;
+}
+
+.counter-number {
+  font-family: var(--font-display, 'Georgia', serif);
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.counter-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  opacity: 0.9;
+  margin-top: 4px;
+}
+
+/* =====================================================
+   Legend - Colorful
+   ===================================================== */
+
+.map-legend {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  background: white;
+  padding: 14px 18px;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  z-index: 10;
+}
+
+.legend-title {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #636e72;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.legend-items {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legend-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.legend-label {
+  font-size: 0.7rem;
+  color: #2d3436;
+  font-weight: 500;
+}
+
+/* =====================================================
+   Toast Notification - Vibrant
+   ===================================================== */
+
+.new-member-toast {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+  color: white;
+  padding: 14px 24px;
+  border-radius: 50px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 10px 30px rgba(0, 184, 148, 0.4);
+  z-index: 100;
+  opacity: 0;
+  transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.new-member-toast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+.toast-emoji {
+  font-size: 1.8rem;
+  animation: wave 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes wave {
+  from { transform: rotate(-10deg); }
+  to { transform: rotate(10deg); }
+}
+
+.toast-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.toast-title {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.9;
+}
+
+.toast-text {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* =====================================================
+   Error State
+   ===================================================== */
+
+.map-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 40px;
+  text-align: center;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
+}
+
+.error-icon {
+  font-size: 4rem;
+  margin-bottom: 20px;
+}
+
+.map-error h3 {
+  font-size: 1.5rem;
+  color: #2d3436;
+  margin-bottom: 10px;
+}
+
+.map-error p {
+  color: #636e72;
+  margin-bottom: 20px;
+}
+
+.error-instructions {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  text-align: left;
+  max-width: 400px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.error-instructions ol {
+  margin-left: 20px;
+  color: #636e72;
+}
+
+.error-instructions li {
+  margin-bottom: 8px;
+}
+
+.error-instructions code {
+  background: #f1f2f6;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  color: #e17055;
+}
+
+.error-instructions a {
+  color: #0984e3;
+}
+
+/* =====================================================
+   Responsive
+   ===================================================== */
+
+@media (max-width: 768px) {
+  .map-container {
+    height: 500px;
+    border-radius: var(--radius-lg);
+  }
+  
+  .map-counter {
+    padding: 12px 18px;
+  }
+  
+  .counter-number {
+    font-size: 2rem;
+  }
+  
+  .map-legend {
+    padding: 10px 14px;
+  }
+  
+  .legend-items {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .marker-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 1.2rem !important;
+  }
+  
+  .marker-pulse {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+@media (max-width: 480px) {
+  .map-container {
+    height: 400px;
+  }
+  
+  .map-legend {
+    display: none;
+  }
+  
+  .new-member-toast {
+    left: 10px;
+    right: 10px;
+    transform: translateX(0) translateY(100px);
+    justify-content: center;
+  }
+  
+  .new-member-toast.show {
+    transform: translateX(0) translateY(0);
+  }
+}
