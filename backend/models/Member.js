@@ -57,7 +57,13 @@ const memberSchema = new mongoose.Schema({
       }
     }
   },
-  // Email for newsletter (optional, from second form)
+  // Owner's name
+  firstName: {
+    type: String,
+    trim: true,
+    maxlength: [100, 'First name cannot exceed 100 characters']
+  },
+  // Email
   email: {
     type: String,
     trim: true,

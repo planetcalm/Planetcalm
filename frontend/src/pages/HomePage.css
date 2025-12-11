@@ -8,6 +8,33 @@
 }
 
 /* =====================================================
+   Site Header with Logo
+   ===================================================== */
+
+.site-header {
+  padding: var(--space-md) 0;
+  background: linear-gradient(to bottom, var(--calm-cream), rgba(255, 255, 255, 0.95));
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.site-logo {
+  display: block;
+  margin: 0 auto;
+  max-width: 200px;
+  height: auto;
+  animation: fadeInDown 0.6s ease-out;
+}
+
+@media (max-width: 768px) {
+  .site-logo {
+    max-width: 150px;
+  }
+}
+
+/* =====================================================
    Hero Section - Full Visual Impact
    ===================================================== */
 
@@ -226,15 +253,23 @@
   overflow: hidden;
 }
 
+.map-section-compact {
+  padding: var(--space-lg) 0 var(--space-4xl);
+}
+
 .map-section::before {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  height: 200px;
+  height: 100px;
   background: linear-gradient(to bottom, var(--calm-cream), transparent);
   pointer-events: none;
+}
+
+.map-section-compact::before {
+  height: 50px;
 }
 
 .map-bg-pattern {
@@ -378,7 +413,7 @@
 
 .gallery-section {
   padding: var(--space-3xl) 0;
-  background: var(--calm-cream);
+  background: linear-gradient(to bottom, #E8E4DD, #DDD7CC);
   overflow: hidden;
 }
 
@@ -486,6 +521,13 @@
 
 .footer-logo {
   font-size: 2rem;
+}
+
+.footer-logo-img {
+  max-width: 150px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
 }
 
 .footer-name {

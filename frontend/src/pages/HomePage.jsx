@@ -1,7 +1,6 @@
 import React from 'react';
 import Map from '../components/Map';
 import PinForm from '../components/PinForm';
-import NewsletterForm from '../components/NewsletterForm';
 import { useApp } from '../context/AppContext';
 import './HomePage.css';
 
@@ -10,7 +9,26 @@ const HomePage = () => {
 
   return (
     <div className="home-page">
-      {/* Hero Section */}
+      {/* Logo Header */}
+      <header className="site-header">
+        <div className="container">
+          <img src="/logo.jpeg" alt="Planet Calm" className="site-logo" />
+        </div>
+      </header>
+
+      {/* Map Section */}
+      <section className="map-section map-section-compact" id="map-section">
+        <div className="map-bg-pattern"></div>
+        <div className="container">
+          <Map />
+          
+          <p className="map-caption">
+            Each point is a promise of gentleness in a noisy world.
+          </p>
+        </div>
+      </section>
+
+      {/* Join Form Section - Hero Style */}
       <section className="hero-section">
         <div className="hero-background">
           <div className="hero-bg-image"></div>
@@ -45,34 +63,6 @@ const HomePage = () => {
         <div className="hero-decoration hero-decoration-2"></div>
         <div className="hero-decoration hero-decoration-3"></div>
         <div className="hero-decoration hero-decoration-4"></div>
-        
-        {/* Scroll indicator */}
-        <div className="scroll-indicator">
-          <span>Explore the map</span>
-          <div className="scroll-arrow"></div>
-        </div>
-      </section>
-
-      {/* Map Section */}
-      <section className="map-section" id="map-section">
-        <div className="map-bg-pattern"></div>
-        <div className="container">
-          <div className="section-header">
-            <span className="section-icon">🌍</span>
-            <h2 className="section-title">
-              You're Not Alone.
-            </h2>
-            <p className="section-subtitle">
-              Every pin is a person, a family, a pet, a heart choosing calm.
-            </p>
-          </div>
-          
-          <Map />
-          
-          <p className="map-caption">
-            Each point is a promise of gentleness in a noisy world.
-          </p>
-        </div>
       </section>
 
       {/* Pet Gallery Section */}
@@ -102,75 +92,30 @@ const HomePage = () => {
             <div className="gallery-item">
               <img 
                 src="https://images.unsplash.com/photo-1425082661705-1834bfd09dca?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" 
-                alt="Serene bunny"
+                alt="Serene hamster"
                 loading="lazy"
               />
             </div>
             <div className="gallery-item">
               <img 
-                src="https://images.unsplash.com/photo-1552053831-71594a27632d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" 
-                alt="Happy dog in nature"
+                src="/images/horse.jpg" 
+                alt="Majestic horse running in field"
                 loading="lazy"
               />
             </div>
             <div className="gallery-item">
               <img 
-                src="https://images.unsplash.com/photo-1573865526739-10659fec78a5?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" 
-                alt="Relaxed tabby cat"
+                src="/images/birds.jpg" 
+                alt="Colorful lovebirds pair"
                 loading="lazy"
               />
             </div>
             <div className="gallery-item">
               <img 
-                src="https://images.unsplash.com/photo-1548767797-d8c844163c4c?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" 
-                alt="Peaceful parrot"
+                src="/images/fish.jpg" 
+                alt="Beautiful tropical angelfish"
                 loading="lazy"
               />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Stats Section */}
-      <section className="stats-section">
-        <div className="container">
-          <div className="stats-grid">
-            <div className="stat-item">
-              <div className="stat-number">{memberCount.toLocaleString()}+</div>
-              <div className="stat-label">Members Worldwide</div>
-            </div>
-            <div className="stat-item">
-              <div className="stat-number">50+</div>
-              <div className="stat-label">Countries</div>
-            </div>
-            <div className="stat-item">
-              <div className="stat-number">∞</div>
-              <div className="stat-label">Love Shared</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Newsletter Section */}
-      <section className="newsletter-section">
-        <div className="newsletter-bg">
-          <div className="newsletter-bg-image"></div>
-        </div>
-        <div className="container">
-          <div className="newsletter-content">
-            <div className="newsletter-header">
-              <span className="newsletter-icon">🍃</span>
-              <span className="newsletter-badge">Take the Next Step</span>
-              <h2 className="section-title">
-                Get Whispers of the Wild
-              </h2>
-              <p className="section-subtitle">
-                Start your calm journey with gentle guidance delivered to your inbox.
-              </p>
-            </div>
-            
-            <div className="newsletter-card">
-              <NewsletterForm />
             </div>
           </div>
         </div>
@@ -182,8 +127,7 @@ const HomePage = () => {
         <div className="container">
           <div className="footer-content">
             <div className="footer-brand">
-              <span className="footer-logo">🌿</span>
-              <span className="footer-name">Planet Calm</span>
+              <img src="/logo.jpeg" alt="Planet Calm" className="footer-logo-img" />
             </div>
             
             <div className="footer-stats">
@@ -199,13 +143,13 @@ const HomePage = () => {
             </div>
             
             <p className="footer-tagline">
-              Restoring peace to pets and their people.
+              Calm Changes Everything.
             </p>
             
             <div className="footer-links">
               <a href="#map-section">View Map</a>
+              <a href="#form-section">Join</a>
               <a href="mailto:hello@planetcalm.com">Contact</a>
-              <a href="/privacy">Privacy</a>
             </div>
           </div>
         </div>

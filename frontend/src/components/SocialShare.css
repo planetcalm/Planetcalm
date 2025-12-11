@@ -1,0 +1,127 @@
+/* =====================================================
+   Social Share Component
+   ===================================================== */
+
+.social-share {
+  padding: var(--space-lg) 0;
+}
+
+.social-share-title {
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--calm-deep);
+  margin-bottom: var(--space-md);
+}
+
+.social-share-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-sm);
+}
+
+.social-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-sm) var(--space-md);
+  background: white;
+  border: 2px solid var(--social-color, var(--calm-sage));
+  border-radius: var(--radius-full);
+  color: var(--social-color, var(--calm-deep));
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.social-btn:hover {
+  background: var(--social-color, var(--calm-sage));
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.social-btn:active {
+  transform: translateY(0);
+}
+
+.social-btn-copy {
+  --social-color: var(--calm-sage);
+}
+
+.social-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+}
+
+.social-svg-icon {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.social-name {
+  font-weight: 600;
+}
+
+/* Compact version for success state */
+.social-share.compact .social-share-title {
+  font-size: 0.875rem;
+  margin-bottom: var(--space-sm);
+}
+
+.social-share.compact .social-btn {
+  padding: var(--space-xs) var(--space-sm);
+  font-size: 0.75rem;
+}
+
+.social-share.compact .social-icon {
+  width: 18px;
+  height: 18px;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .social-share-buttons {
+    gap: var(--space-xs);
+  }
+  
+  .social-btn {
+    padding: var(--space-sm);
+    font-size: 0.75rem;
+    min-width: 44px;
+    min-height: 44px;
+  }
+  
+  .social-name {
+    display: none;
+  }
+  
+  .social-icon {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+/* Animation */
+.social-share {
+  animation: fadeInUp 0.4s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+

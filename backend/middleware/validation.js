@@ -18,6 +18,17 @@ const handleValidationErrors = (req, res, next) => {
 
 // Validation rules for member/pin creation (supports both city and coordinates mode)
 const validateMember = [
+  body('firstName')
+    .trim()
+    .notEmpty().withMessage('First name is required')
+    .isLength({ max: 100 }).withMessage('First name must be less than 100 characters'),
+  
+  body('email')
+    .trim()
+    .notEmpty().withMessage('Email is required')
+    .isEmail().withMessage('Please enter a valid email')
+    .normalizeEmail(),
+  
   body('petName')
     .trim()
     .notEmpty().withMessage('Pet name is required')

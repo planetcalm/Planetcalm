@@ -98,7 +98,7 @@ const getRecentMembers = async (req, res) => {
  */
 const createMember = async (req, res) => {
   try {
-    const { petName, petType, city, state, country, latitude, longitude, locationName, useCoordinates } = req.body;
+    const { firstName, email, petName, petType, city, state, country, latitude, longitude, locationName, useCoordinates } = req.body;
 
     let finalLongitude, finalLatitude, locationData;
 
@@ -167,6 +167,8 @@ const createMember = async (req, res) => {
 
     // Create the member
     const member = await Member.create({
+      firstName,
+      email,
       petName,
       petType,
       location: locationData,

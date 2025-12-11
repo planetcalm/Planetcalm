@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
+import SocialShare from './SocialShare';
 import './PinForm.css';
 
 const PET_TYPES = [
@@ -41,6 +42,8 @@ const PinForm = ({ onSuccess }) => {
   const [locationMode, setLocationMode] = useState('city');
   
   const [formData, setFormData] = useState({
+    firstName: '',
+    email: '',
     petName: '',
     petType: '',
     city: '',
@@ -152,6 +155,23 @@ const PinForm = ({ onSuccess }) => {
     setError(null);
     setIsSubmitting(true);
 
+    // Basic validation - personal info
+    if (!formData.firstName.trim()) {
+      setError('Please enter your first name');
+      setIsSubmitting(false);
+      return;
+    }
+    if (!formData.email.trim()) {
+      setError('Please enter your email');
+      setIsSubmitting(false);
+      return;
+    }
+    if (!/^\S+@\S+\.\S+$/.test(formData.email)) {
+      setError('Please enter a valid email address');
+      setIsSubmitting(false);
+      return;
+    }
+
     // Basic validation - pet info
     if (!formData.petName.trim()) {
       setError('Please enter your pet\'s name');
@@ -200,6 +220,8 @@ const PinForm = ({ onSuccess }) => {
     try {
       // Prepare data based on location mode
       const submitData = {
+        firstName: formData.firstName,
+        email: formData.email,
         petName: formData.petName,
         petType: formData.petType,
       };
@@ -221,6 +243,8 @@ const PinForm = ({ onSuccess }) => {
       if (result.success) {
         setSuccess(true);
         setFormData({
+          firstName: '',
+          email: '',
           petName: '',
           petType: '',
           city: '',
@@ -237,7 +261,7 @@ const PinForm = ({ onSuccess }) => {
         setTimeout(() => {
           document.getElementById('map-section')?.scrollIntoView({ 
             behavior: 'smooth',
-            block: 'center'
+            block: 'start'
           });
         }, 500);
       } else {
@@ -255,19 +279,68 @@ const PinForm = ({ onSuccess }) => {
       <div className="form-success">
         <div className="success-icon">🌍</div>
         <h3>Your Pin Has Been Placed!</h3>
-        <p>Welcome to the movement. Scroll down to see your pin on the map.</p>
-        <button 
-          className="btn btn-secondary"
-          onClick={() => setSuccess(false)}
-        >
-          Add Another Pin
-        </button>
+        <p>Welcome to the movement. Scroll up to see your pin on the map!</p>
+        
+        <div className="success-actions">
+          <button 
+            className="btn btn-primary"
+            onClick={() => setSuccess(false)}
+          >
+            📍 Add Another Pin
+          </button>
+        </div>
+
+        <div className="success-divider">
+          <span>Spread the Word</span>
+        </div>
+        
+        <SocialShare 
+          title="Share Planet Calm with others"
+          className="compact"
+        />
       </div>
     );
   }
 
   return (
     <form className="pin-form" onSubmit={handleSubmit}>
+      {/* Personal Info Section */}
+      <div className="form-grid">
+        <div className="form-group">
+          <label htmlFor="firstName" className="form-label">
+            Your First Name
+          </label>
+          <input
+            type="text"
+            id="firstName"
+            name="firstName"
+            className="form-input"
+            placeholder="Your name"
+            value={formData.firstName}
+            onChange={handleChange}
+            disabled={isSubmitting}
+            autoComplete="given-name"
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="email" className="form-label">
+            Email Address
+          </label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            className="form-input"
+            placeholder="your@email.com"
+            value={formData.email}
+            onChange={handleChange}
+            disabled={isSubmitting}
+            autoComplete="email"
+          />
+        </div>
+      </div>
+
       {/* Pet Info Section */}
       <div className="form-grid">
         <div className="form-group">
