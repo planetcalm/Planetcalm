@@ -5,20 +5,75 @@ import { useApp } from '../context/AppContext';
 import './HomePage.css';
 
 const HomePage = () => {
-  const { memberCount, isConnected } = useApp();
+  const { memberCount, isConnected, newlyAddedMember } = useApp();
+
+  const scrollToForm = (e) => {
+    e.preventDefault();
+    document.getElementById('form-section')?.scrollIntoView({ 
+      behavior: 'smooth',
+      block: 'start'
+    });
+  };
 
   return (
     <div className="home-page">
       {/* Logo Header */}
       <header className="site-header">
         <div className="container">
-          <img src="/logo.jpeg" alt="Planet Calm" className="site-logo" />
+          <a href="https://planetcalm.co" target="_blank" rel="noopener noreferrer" className="site-logo-link">
+            <img src="/logo.png" alt="Planet Calm" className="site-logo" />
+          </a>
         </div>
       </header>
 
       {/* Map Section */}
       <section className="map-section map-section-compact" id="map-section">
         <div className="map-bg-pattern"></div>
+        
+        {/* Floating CTA on Map - Show only if no new member */}
+        {!newlyAddedMember && (
+          <div className="map-cta-overlay">
+            <a href="#form-section" onClick={scrollToForm} className="map-cta-button-float">
+              <span className="cta-icon">📍</span>
+              <span className="cta-text">Add Your Pet to the Map</span>
+            </a>
+          </div>
+        )}
+        
+        {/* Success Banner - Show after adding pet */}
+        {newlyAddedMember && (
+          <div className="map-success-banner">
+            <div className="success-banner-content">
+              <span className="success-banner-icon">🎉</span>
+              <div className="success-banner-text">
+                <strong>Pin Added!</strong>
+                <span>Your pet is now on the map</span>
+              </div>
+            </div>
+            <div className="success-banner-actions">
+              <button onClick={scrollToForm} className="banner-btn banner-btn-primary">
+                Add Another Pet
+              </button>
+              <button 
+                onClick={() => {
+                  if (navigator.share) {
+                    navigator.share({
+                      title: 'Planet Calm',
+                      text: 'I just added my pet to Planet Calm! Join the movement 🐾',
+                      url: window.location.href
+                    });
+                  } else {
+                    scrollToForm();
+                  }
+                }} 
+                className="banner-btn banner-btn-secondary"
+              >
+                Share Map
+              </button>
+            </div>
+          </div>
+        )}
+        
         <div className="container">
           <Map />
           
@@ -29,7 +84,7 @@ const HomePage = () => {
       </section>
 
       {/* Join Form Section - Hero Style */}
-      <section className="hero-section">
+      <section className="hero-section" id="form-section">
         <div className="hero-background">
           <div className="hero-bg-image"></div>
           <div className="hero-gradient"></div>
@@ -127,7 +182,7 @@ const HomePage = () => {
         <div className="container">
           <div className="footer-content">
             <div className="footer-brand">
-              <img src="/logo.jpeg" alt="Planet Calm" className="footer-logo-img" />
+              <img src="/logo.png" alt="Planet Calm" className="footer-logo-img" />
             </div>
             
             <div className="footer-stats">

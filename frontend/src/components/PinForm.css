@@ -33,6 +33,35 @@
   border-top: 1px solid var(--color-border);
 }
 
+/* =====================================================
+   Personal Info Section
+   ===================================================== */
+
+.personal-info-section {
+  margin-top: var(--space-xl);
+  padding-top: var(--space-xl);
+  border-top: 2px solid var(--color-border);
+}
+
+.passport-heading {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--calm-deep);
+  text-align: center;
+  margin-bottom: var(--space-xl);
+  line-height: 1.4;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (max-width: 768px) {
+  .passport-heading {
+    font-size: 1.25rem;
+    margin-bottom: var(--space-lg);
+  }
+}
+
 .location-header {
   display: flex;
   justify-content: space-between;

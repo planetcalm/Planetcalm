@@ -304,43 +304,6 @@ const PinForm = ({ onSuccess }) => {
 
   return (
     <form className="pin-form" onSubmit={handleSubmit}>
-      {/* Personal Info Section */}
-      <div className="form-grid">
-        <div className="form-group">
-          <label htmlFor="firstName" className="form-label">
-            Your First Name
-          </label>
-          <input
-            type="text"
-            id="firstName"
-            name="firstName"
-            className="form-input"
-            placeholder="Your name"
-            value={formData.firstName}
-            onChange={handleChange}
-            disabled={isSubmitting}
-            autoComplete="given-name"
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="email" className="form-label">
-            Email Address
-          </label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            className="form-input"
-            placeholder="your@email.com"
-            value={formData.email}
-            onChange={handleChange}
-            disabled={isSubmitting}
-            autoComplete="email"
-          />
-        </div>
-      </div>
-
       {/* Pet Info Section */}
       <div className="form-grid">
         <div className="form-group">
@@ -562,6 +525,49 @@ const PinForm = ({ onSuccess }) => {
             </div>
           </div>
         )}
+      </div>
+
+      {/* Personal Info Section - After Pet and Location */}
+      <div className="personal-info-section">
+        <h3 className="passport-heading">
+          Where should we send your pet's passport for Planet Calm?
+        </h3>
+
+        <div className="form-grid">
+          <div className="form-group">
+            <label htmlFor="firstName" className="form-label">
+              Your Name
+            </label>
+            <input
+              type="text"
+              id="firstName"
+              name="firstName"
+              className="form-input"
+              placeholder="Your Name"
+              value={formData.firstName}
+              onChange={handleChange}
+              disabled={isSubmitting}
+              autoComplete="given-name"
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="email" className="form-label">
+              Email Address
+            </label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              className="form-input"
+              placeholder="Email Address"
+              value={formData.email}
+              onChange={handleChange}
+              disabled={isSubmitting}
+              autoComplete="email"
+            />
+          </div>
+        </div>
       </div>
 
       {error && (
