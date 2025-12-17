@@ -46,6 +46,7 @@ const PinForm = ({ onSuccess }) => {
     email: '',
     petName: '',
     petType: '',
+    petStatus: 'with-you', // 'with-you' or 'in-heart'
     city: '',
     state: '',
     country: '',
@@ -224,6 +225,7 @@ const PinForm = ({ onSuccess }) => {
         email: formData.email,
         petName: formData.petName,
         petType: formData.petType,
+        petStatus: formData.petStatus,
       };
 
       if (locationMode === 'city') {
@@ -247,6 +249,7 @@ const PinForm = ({ onSuccess }) => {
           email: '',
           petName: '',
           petType: '',
+          petStatus: 'with-you',
           city: '',
           state: '',
           country: '',
@@ -340,6 +343,40 @@ const PinForm = ({ onSuccess }) => {
               <option key={type} value={type}>{type}</option>
             ))}
           </select>
+        </div>
+      </div>
+
+      {/* Pet Status Section */}
+      <div className="pet-status-section">
+        <label className="form-label pet-status-label">
+          Is your pet...
+        </label>
+        <div className="pet-status-options">
+          <label className={`pet-status-option ${formData.petStatus === 'with-you' ? 'selected' : ''}`}>
+            <input
+              type="radio"
+              name="petStatus"
+              value="with-you"
+              checked={formData.petStatus === 'with-you'}
+              onChange={handleChange}
+              disabled={isSubmitting}
+            />
+            <span className="status-icon">🐾</span>
+            <span className="status-text">With you</span>
+          </label>
+          
+          <label className={`pet-status-option ${formData.petStatus === 'in-heart' ? 'selected' : ''}`}>
+            <input
+              type="radio"
+              name="petStatus"
+              value="in-heart"
+              checked={formData.petStatus === 'in-heart'}
+              onChange={handleChange}
+              disabled={isSubmitting}
+            />
+            <span className="status-icon">🌈</span>
+            <span className="status-text">With you in your heart</span>
+          </label>
         </div>
       </div>
 

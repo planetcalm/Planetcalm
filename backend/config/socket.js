@@ -52,6 +52,7 @@ const emitNewMember = (member) => {
       id: member._id,
       petName: member.petName,
       petType: member.petType,
+      petStatus: member.petStatus || 'with-you',
       location: member.location,
       coordinates: member.coordinates,
       createdAt: member.createdAt

@@ -126,6 +126,33 @@
   }
 }
 
+/* Rainbow overlay for "in heart" pets */
+.marker-rainbow {
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+  font-size: 1.2rem;
+  z-index: 10;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  animation: rainbow-glow 2s ease-in-out infinite;
+}
+
+.marker-container.has-rainbow .marker-icon {
+  border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+@keyframes rainbow-glow {
+  0%, 100% {
+    transform: translateX(-50%) rotate(45deg) scale(1);
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  }
+  50% {
+    transform: translateX(-50%) rotate(45deg) scale(1.1);
+    filter: drop-shadow(0 4px 8px rgba(255, 215, 0, 0.4)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  }
+}
+
 /* Hover state */
 .custom-marker:hover .marker-icon {
   transform: rotate(-45deg) scale(1.15);

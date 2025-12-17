@@ -15,6 +15,14 @@ const memberSchema = new mongoose.Schema({
       message: '{VALUE} is not a valid pet type'
     }
   },
+  petStatus: {
+    type: String,
+    enum: {
+      values: ['with-you', 'in-heart'],
+      message: '{VALUE} is not a valid pet status'
+    },
+    default: 'with-you'
+  },
   location: {
     city: {
       type: String,
@@ -121,7 +129,7 @@ memberSchema.pre('save', function(next) {
 // Static method to get all active members for map
 memberSchema.statics.getActiveForMap = function() {
   return this.find({ isActive: true, isVerified: true })
-    .select('petName petType location coordinates createdAt')
+    .select('petName petType petStatus location coordinates createdAt')
     .sort({ createdAt: -1 })
     .lean();
 };

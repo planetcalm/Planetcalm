@@ -116,15 +116,17 @@ const Map = () => {
       if (markersRef.current[id]) return;
       
       const coords = member.geometry.coordinates;
-      const { petName, petType, location } = member.properties;
+      const { petName, petType, petStatus, location } = member.properties;
       
       // Create custom marker element
       const el = document.createElement('div');
       el.className = 'custom-marker';
+      const rainbowClass = petStatus === 'in-heart' ? 'has-rainbow' : '';
       el.innerHTML = `
-        <div class="marker-container" style="--marker-color: ${PET_COLORS[petType] || PET_COLORS.Other}">
+        <div class="marker-container ${rainbowClass}" style="--marker-color: ${PET_COLORS[petType] || PET_COLORS.Other}">
           <div class="marker-icon">${PET_ICONS[petType] || PET_ICONS.Other}</div>
           <div class="marker-pulse"></div>
+          ${petStatus === 'in-heart' ? '<div class="marker-rainbow">🌈</div>' : ''}
         </div>
       `;
       

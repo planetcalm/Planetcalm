@@ -2,6 +2,48 @@ const Member = require('../models/Member');
 const { geocodeLocation } = require('../config/geocoding');
 const { emitNewMember, emitMemberCount } = require('../config/socket');
 const { normalizeWebhookData } = require('../middleware/validation');
+const axios = require('axios');
+
+// GoHighLevel Webhook URL
+const GHL_WEBHOOK_URL = process.env.GHL_WEBHOOK_URL || 'https://services.leadconnectorhq.com/hooks/g97HoHwEZJV52caDhJTZ/webhook-trigger/505dd333-82f7-47e2-818e-7fab42fde380';
+
+/**
+ * Send data to GoHighLevel webhook to create contact
+ */
+const sendToGoHighLevel = async (member) => {
+  try {
+    // Only send if there's an email (GHL needs an identifier)
+    if (!member.email) {
+      console.log('⚠️ Skipping GHL webhook - no email provided');
+      return;
+    }
+
+    // Build a FLAT payload for HighLevel
+    const payload = {
+      first_name: member.firstName || '',
+      email: member.email || '',
+      pet_name: member.petName || '',
+      pet_type: member.petType || '',
+      pet_status: member.petStatus || 'with-you',
+      city: member.location?.city || '',
+      state: member.location?.state || '',
+      country: member.location?.country || ''
+    };
+
+    console.log('📤 Sending to GoHighLevel:', payload);
+
+    // Send POST to GoHighLevel webhook
+    const response = await axios.post(GHL_WEBHOOK_URL, payload, {
+      headers: { 'Content-Type': 'application/json' },
+      timeout: 10000 // 10 second timeout
+    });
+
+    console.log('✅ GoHighLevel webhook successful:', response.status);
+  } catch (error) {
+    // Log error but don't fail the member creation
+    console.error('❌ GoHighLevel webhook failed:', error.message);
+  }
+};
 
 /**
  * @desc    Get all members for map display
@@ -25,6 +67,7 @@ const getMembers = async (req, res) => {
           id: member._id,
           petName: member.petName,
           petType: member.petType,
+          petStatus: member.petStatus || 'with-you',
           location: member.location.formatted || member.location.city,
           createdAt: member.createdAt
         }
@@ -98,7 +141,7 @@ const getRecentMembers = async (req, res) => {
  */
 const createMember = async (req, res) => {
   try {
-    const { firstName, email, petName, petType, city, state, country, latitude, longitude, locationName, useCoordinates } = req.body;
+    const { firstName, email, petName, petType, petStatus, city, state, country, latitude, longitude, locationName, useCoordinates } = req.body;
 
     let finalLongitude, finalLatitude, locationData;
 
@@ -171,6 +214,7 @@ const createMember = async (req, res) => {
       email,
       petName,
       petType,
+      petStatus: petStatus || 'with-you',
       location: locationData,
       coordinates: {
         type: 'Point',
@@ -182,6 +226,9 @@ const createMember = async (req, res) => {
     // Emit to all connected clients via WebSocket
     emitNewMember(member);
     emitMemberCount();
+
+    // Send to GoHighLevel
+    await sendToGoHighLevel(member);
 
     console.log(`✅ New member created: ${petName} (${petType}) at [${finalLongitude}, ${finalLatitude}]`);
 
@@ -243,7 +290,7 @@ const webhookCreateMember = async (req, res) => {
     // Use normalized data from middleware or normalize here
     const data = req.normalizedData || normalizeWebhookData(req.body);
     
-    const { petName, petType, city, state, country } = data;
+    const { petName, petType, petStatus, city, state, country } = data;
     
     // Check for direct coordinates in webhook
     const latitude = req.body.latitude || req.body.lat;
@@ -320,6 +367,7 @@ const webhookCreateMember = async (req, res) => {
     const member = await Member.create({
       petName,
       petType: petType || 'Other',
+      petStatus: petStatus || 'with-you',
       location: locationData,
       coordinates: {
         type: 'Point',

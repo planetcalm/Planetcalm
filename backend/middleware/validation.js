@@ -227,6 +227,7 @@ function normalizeWebhookData(data) {
   return {
     petName: flatData.petName || flatData.pet_name || flatData['Pet Name'] || flatData['pet-name'] || '',
     petType: flatData.petType || flatData.pet_type || flatData['Pet Type'] || flatData['pet-type'] || 'Other',
+    petStatus: flatData.petStatus || flatData.pet_status || flatData['Pet Status'] || flatData['pet-status'] || 'with-you',
     city: flatData.city || flatData.City || flatData['city'] || '',
     state: flatData.state || flatData.State || flatData['state'] || flatData.province || flatData.Province || '',
     country: flatData.country || flatData.Country || flatData['country'] || '',

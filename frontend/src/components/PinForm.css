@@ -24,6 +24,77 @@
 }
 
 /* =====================================================
+   Pet Status Section
+   ===================================================== */
+
+.pet-status-section {
+  margin-top: var(--space-lg);
+}
+
+.pet-status-label {
+  display: block;
+  margin-bottom: var(--space-md);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.pet-status-options {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-md);
+}
+
+.pet-status-option {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-lg) var(--space-md);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.pet-status-option input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.pet-status-option:hover {
+  border-color: var(--calm-sage);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.pet-status-option.selected {
+  border-color: var(--calm-sage);
+  background: linear-gradient(135deg, rgba(168, 197, 168, 0.1) 0%, rgba(184, 212, 227, 0.1) 100%);
+  box-shadow: 0 4px 12px rgba(168, 197, 168, 0.3);
+}
+
+.status-icon {
+  font-size: 2rem;
+  display: block;
+}
+
+.status-text {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--calm-deep);
+  text-align: center;
+}
+
+@media (max-width: 500px) {
+  .pet-status-options {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =====================================================
    Location Section
    ===================================================== */
 
