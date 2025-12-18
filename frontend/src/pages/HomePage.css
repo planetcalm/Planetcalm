@@ -300,13 +300,13 @@
   align-items: center;
   gap: var(--space-sm);
   padding: var(--space-md) var(--space-xl);
-  background: linear-gradient(135deg, var(--calm-sage) 0%, #8FB09A 100%);
+  background: linear-gradient(135deg, #F5A623 0%, #F7B955 100%);
   color: white;
   font-size: 1.125rem;
   font-weight: 600;
   border-radius: var(--radius-full);
   text-decoration: none;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2), 0 4px 10px rgba(168, 197, 168, 0.4);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2), 0 4px 10px rgba(245, 166, 35, 0.4);
   transition: all 0.3s ease;
   cursor: pointer;
   backdrop-filter: blur(10px);
@@ -315,8 +315,8 @@
 
 .map-cta-button-float:hover {
   transform: translateY(-3px) scale(1.05);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25), 0 6px 15px rgba(168, 197, 168, 0.5);
-  background: linear-gradient(135deg, #8FB09A 0%, var(--calm-sage) 100%);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25), 0 6px 15px rgba(245, 166, 35, 0.5);
+  background: linear-gradient(135deg, #F7B955 0%, #F5A623 100%);
 }
 
 .map-cta-button-float:active {
@@ -409,14 +409,14 @@
 }
 
 .banner-btn-primary {
-  background: linear-gradient(135deg, var(--calm-sage) 0%, #8FB09A 100%);
+  background: linear-gradient(135deg, #F5A623 0%, #F7B955 100%);
   color: white;
-  box-shadow: 0 2px 8px rgba(168, 197, 168, 0.3);
+  box-shadow: 0 2px 8px rgba(245, 166, 35, 0.3);
 }
 
 .banner-btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(168, 197, 168, 0.4);
+  box-shadow: 0 4px 12px rgba(245, 166, 35, 0.4);
 }
 
 .banner-btn-secondary {

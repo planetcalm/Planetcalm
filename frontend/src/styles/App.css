@@ -210,14 +210,15 @@ p {
 }
 
 .btn-primary {
-  background: var(--calm-deep);
-  color: var(--calm-cream);
+  background: linear-gradient(135deg, #F5A623 0%, #F7B955 100%);
+  color: white;
+  font-weight: 600;
 }
 
 .btn-primary:hover {
-  background: var(--calm-deep-light);
+  background: linear-gradient(135deg, #F7B955 0%, #F5A623 100%);
   transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 10px 20px rgba(245, 166, 35, 0.3);
 }
 
 .btn-primary:active {

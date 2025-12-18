@@ -27,7 +27,7 @@ const validateMember = [
     .trim()
     .notEmpty().withMessage('Email is required')
     .isEmail().withMessage('Please enter a valid email')
-    .normalizeEmail(),
+    .normalizeEmail({ gmail_remove_dots: false }),
   
   body('petName')
     .trim()
@@ -211,7 +211,7 @@ const validateSubscriber = [
     .trim()
     .notEmpty().withMessage('Email is required')
     .isEmail().withMessage('Please enter a valid email')
-    .normalizeEmail(),
+    .normalizeEmail({ gmail_remove_dots: false }),
   
   handleValidationErrors
 ];
