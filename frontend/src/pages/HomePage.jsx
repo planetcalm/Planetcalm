@@ -29,9 +29,7 @@ const HomePage = () => {
       {/* Map Section */}
       <section className="map-section map-section-compact" id="map-section">
         <div className="map-bg-pattern"></div>
-        <h2>Start with honoring your pet.</h2>
-        <h3>Every pin is a person, a family, a pet choosing calm.</h3>
-        
+            
         {/* Floating CTA on Map - Show only if no new member */}
         {!newlyAddedMember && (
           <div className="map-cta-overlay">
