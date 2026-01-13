@@ -29,7 +29,7 @@ const HomePage = () => {
       {/* Map Section */}
       <section className="map-section map-section-compact" id="map-section">
         <div className="map-bg-pattern"></div>
-        
+            
         {/* Floating CTA on Map - Show only if no new member */}
         {!newlyAddedMember && (
           <div className="map-cta-overlay">
