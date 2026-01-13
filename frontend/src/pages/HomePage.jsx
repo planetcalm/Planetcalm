@@ -75,6 +75,11 @@ const HomePage = () => {
         )}
         
         <div className="container">
+          {/* Map Title */}
+          <h2 className="map-title">
+            Start by Honoring Your Pet - Click the button below to add your pet to the map
+          </h2>
+          
           <Map />
           
           <p className="map-caption">

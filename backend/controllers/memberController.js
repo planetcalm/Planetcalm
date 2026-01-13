@@ -9,6 +9,7 @@ const GHL_WEBHOOK_URL = process.env.GHL_WEBHOOK_URL || 'https://services.leadcon
 
 /**
  * Send data to GoHighLevel webhook to create contact
+ * Includes affiliate tracking (am_id) if available
  */
 const sendToGoHighLevel = async (member) => {
   try {
@@ -27,8 +28,14 @@ const sendToGoHighLevel = async (member) => {
       pet_status: member.petStatus || 'with-you',
       city: member.location?.city || '',
       state: member.location?.state || '',
-      country: member.location?.country || ''
+      country: member.location?.country || '',
+      am_id: member.affiliateId || '' // Include affiliate ID for tracking
     };
+
+    // Log affiliate tracking if present
+    if (member.affiliateId) {
+      console.log('📊 Including affiliate ID in GHL webhook:', member.affiliateId);
+    }
 
     console.log('📤 Sending to GoHighLevel:', payload);
 
@@ -141,7 +148,7 @@ const getRecentMembers = async (req, res) => {
  */
 const createMember = async (req, res) => {
   try {
-    const { firstName, email, petName, petType, petStatus, city, state, country, latitude, longitude, locationName, useCoordinates } = req.body;
+    const { firstName, email, petName, petType, petStatus, city, state, country, latitude, longitude, locationName, useCoordinates, am_id } = req.body;
 
     let finalLongitude, finalLatitude, locationData;
 
@@ -220,14 +227,20 @@ const createMember = async (req, res) => {
         type: 'Point',
         coordinates: [finalLongitude, finalLatitude]
       },
-      source: 'website'
+      source: 'website',
+      affiliateId: am_id || undefined // Store affiliate ID if provided
     });
+
+    // Log affiliate tracking
+    if (am_id) {
+      console.log(`📊 Member created with affiliate ID: ${am_id}`);
+    }
 
     // Emit to all connected clients via WebSocket
     emitNewMember(member);
     emitMemberCount();
 
-    // Send to GoHighLevel
+    // Send to GoHighLevel (includes affiliate ID)
     await sendToGoHighLevel(member);
 
     console.log(`✅ New member created: ${petName} (${petType}) at [${finalLongitude}, ${finalLatitude}]`);

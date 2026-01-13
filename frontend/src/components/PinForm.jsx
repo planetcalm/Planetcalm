@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
+import { getAffiliateId } from '../utils/affiliateTracking';
 import SocialShare from './SocialShare';
 import './PinForm.css';
 
@@ -38,9 +39,6 @@ const COUNTRIES = [
 const PinForm = ({ onSuccess }) => {
   const { addMember } = useApp();
   
-  // Location mode: 'city' | 'coordinates' | 'gps'
-  const [locationMode, setLocationMode] = useState('city');
-  
   const [formData, setFormData] = useState({
     firstName: '',
     email: '',
@@ -49,14 +47,10 @@ const PinForm = ({ onSuccess }) => {
     petStatus: 'with-you', // 'with-you' or 'in-heart'
     city: '',
     state: '',
-    country: '',
-    latitude: '',
-    longitude: '',
-    locationName: '' // For display when using coordinates/GPS
+    country: ''
   });
   
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isGettingLocation, setIsGettingLocation] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
 
@@ -67,88 +61,6 @@ const PinForm = ({ onSuccess }) => {
       [name]: value
     }));
     setError(null);
-  };
-
-  // Handle location mode change
-  const handleModeChange = (mode) => {
-    setLocationMode(mode);
-    setError(null);
-    // Clear location-specific fields when switching modes
-    if (mode === 'city') {
-      setFormData(prev => ({ ...prev, latitude: '', longitude: '', locationName: '' }));
-    } else if (mode === 'coordinates') {
-      setFormData(prev => ({ ...prev, city: '', state: '', country: '' }));
-    }
-  };
-
-  // Get current location using GPS
-  const getCurrentLocation = () => {
-    if (!navigator.geolocation) {
-      setError('Geolocation is not supported by your browser');
-      return;
-    }
-
-    setIsGettingLocation(true);
-    setError(null);
-
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        const { latitude, longitude } = position.coords;
-        
-        // Try to reverse geocode to get location name
-        let locationName = `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
-        
-        try {
-          // Use Mapbox reverse geocoding (or you can use a free API)
-          const token = process.env.REACT_APP_MAPBOX_TOKEN;
-          if (token) {
-            const response = await fetch(
-              `https://api.mapbox.com/geocoding/v5/mapbox.places/${longitude},${latitude}.json?access_token=${token}&types=place,locality`
-            );
-            const data = await response.json();
-            if (data.features && data.features.length > 0) {
-              locationName = data.features[0].place_name;
-            }
-          }
-        } catch (err) {
-          console.log('Reverse geocoding failed, using coordinates');
-        }
-
-        setFormData(prev => ({
-          ...prev,
-          latitude: latitude.toFixed(6),
-          longitude: longitude.toFixed(6),
-          locationName: locationName,
-          city: '',
-          state: '',
-          country: ''
-        }));
-        
-        setLocationMode('gps');
-        setIsGettingLocation(false);
-      },
-      (error) => {
-        setIsGettingLocation(false);
-        switch (error.code) {
-          case error.PERMISSION_DENIED:
-            setError('Location permission denied. Please enable location access or enter manually.');
-            break;
-          case error.POSITION_UNAVAILABLE:
-            setError('Location unavailable. Please try again or enter manually.');
-            break;
-          case error.TIMEOUT:
-            setError('Location request timed out. Please try again.');
-            break;
-          default:
-            setError('Unable to get location. Please enter manually.');
-        }
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 0
-      }
-    );
   };
 
   const handleSubmit = async (e) => {
@@ -185,59 +97,37 @@ const PinForm = ({ onSuccess }) => {
       return;
     }
 
-    // Location validation based on mode
-    if (locationMode === 'city') {
-      if (!formData.city.trim()) {
-        setError('Please enter your city');
-        setIsSubmitting(false);
-        return;
-      }
-      if (!formData.country) {
-        setError('Please select your country');
-        setIsSubmitting(false);
-        return;
-      }
-    } else if (locationMode === 'coordinates' || locationMode === 'gps') {
-      const lat = parseFloat(formData.latitude);
-      const lng = parseFloat(formData.longitude);
-      
-      if (isNaN(lat) || isNaN(lng)) {
-        setError('Please enter valid latitude and longitude');
-        setIsSubmitting(false);
-        return;
-      }
-      if (lat < -90 || lat > 90) {
-        setError('Latitude must be between -90 and 90');
-        setIsSubmitting(false);
-        return;
-      }
-      if (lng < -180 || lng > 180) {
-        setError('Longitude must be between -180 and 180');
-        setIsSubmitting(false);
-        return;
-      }
+    // Location validation
+    if (!formData.city.trim()) {
+      setError('Please enter your city');
+      setIsSubmitting(false);
+      return;
+    }
+    if (!formData.country) {
+      setError('Please select your country');
+      setIsSubmitting(false);
+      return;
     }
 
     try {
-      // Prepare data based on location mode
+      // Prepare data with affiliate ID
+      const affiliateId = getAffiliateId();
+      
       const submitData = {
         firstName: formData.firstName,
         email: formData.email,
         petName: formData.petName,
         petType: formData.petType,
         petStatus: formData.petStatus,
+        city: formData.city,
+        state: formData.state,
+        country: formData.country,
+        am_id: affiliateId || '' // Include affiliate ID if available
       };
 
-      if (locationMode === 'city') {
-        submitData.city = formData.city;
-        submitData.state = formData.state;
-        submitData.country = formData.country;
-      } else {
-        // For coordinates/GPS mode, send lat/lng directly
-        submitData.latitude = parseFloat(formData.latitude);
-        submitData.longitude = parseFloat(formData.longitude);
-        submitData.locationName = formData.locationName || `${formData.latitude}, ${formData.longitude}`;
-        submitData.useCoordinates = true;
+      // Log for debugging (remove in production)
+      if (affiliateId) {
+        console.log('📊 Submitting with affiliate ID:', affiliateId);
       }
 
       const result = await addMember(submitData);
@@ -252,12 +142,8 @@ const PinForm = ({ onSuccess }) => {
           petStatus: 'with-you',
           city: '',
           state: '',
-          country: '',
-          latitude: '',
-          longitude: '',
-          locationName: ''
+          country: ''
         });
-        setLocationMode('city');
         onSuccess?.();
         
         // Scroll to map
@@ -380,188 +266,66 @@ const PinForm = ({ onSuccess }) => {
         </div>
       </div>
 
-      {/* Location Mode Selector */}
+      {/* Location Section */}
       <div className="location-section">
         <div className="location-header">
           <span className="form-label">📍 Location</span>
-          <div className="location-mode-toggle">
-            <button
-              type="button"
-              className={`mode-btn ${locationMode === 'city' ? 'active' : ''}`}
-              onClick={() => handleModeChange('city')}
-              disabled={isSubmitting}
-            >
-              City
-            </button>
-            <button
-              type="button"
-              className={`mode-btn ${locationMode === 'coordinates' ? 'active' : ''}`}
-              onClick={() => handleModeChange('coordinates')}
-              disabled={isSubmitting}
-            >
-              Coordinates
-            </button>
-          </div>
         </div>
 
-        {/* GPS Button */}
-        <button
-          type="button"
-          className="gps-button"
-          onClick={getCurrentLocation}
-          disabled={isSubmitting || isGettingLocation}
-        >
-          {isGettingLocation ? (
-            <>
-              <span className="spinner-small"></span>
-              Getting location...
-            </>
-          ) : (
-            <>
-              <span className="gps-icon">📍</span>
-              Use My Current Location
-            </>
-          )}
-        </button>
+        <div className="form-grid">
+          <div className="form-group">
+            <label htmlFor="city" className="form-label">
+              City
+            </label>
+            <input
+              type="text"
+              id="city"
+              name="city"
+              className="form-input"
+              placeholder="Your city"
+              value={formData.city}
+              onChange={handleChange}
+              disabled={isSubmitting}
+              autoComplete="off"
+            />
+          </div>
 
-        {/* GPS Success Display */}
-        {locationMode === 'gps' && formData.latitude && (
-          <div className="gps-success">
-            <span className="gps-success-icon">✓</span>
-            <div className="gps-success-info">
-              <span className="gps-success-label">Location detected:</span>
-              <span className="gps-success-value">{formData.locationName}</span>
-            </div>
-            <button 
-              type="button" 
-              className="gps-clear"
-              onClick={() => handleModeChange('city')}
+          <div className="form-group">
+            <label htmlFor="state" className="form-label">
+              State / Province
+            </label>
+            <input
+              type="text"
+              id="state"
+              name="state"
+              className="form-input"
+              placeholder="Optional"
+              value={formData.state}
+              onChange={handleChange}
+              disabled={isSubmitting}
+              autoComplete="off"
+            />
+          </div>
+
+          <div className="form-group form-group-full">
+            <label htmlFor="country" className="form-label">
+              Country
+            </label>
+            <select
+              id="country"
+              name="country"
+              className="form-select"
+              value={formData.country}
+              onChange={handleChange}
+              disabled={isSubmitting}
             >
-              ✕
-            </button>
+              <option value="">Select country</option>
+              {COUNTRIES.map(country => (
+                <option key={country} value={country}>{country}</option>
+              ))}
+            </select>
           </div>
-        )}
-
-        {/* City/Country Fields */}
-        {locationMode === 'city' && (
-          <div className="form-grid">
-            <div className="form-group">
-              <label htmlFor="city" className="form-label">
-                City
-              </label>
-              <input
-                type="text"
-                id="city"
-                name="city"
-                className="form-input"
-                placeholder="Your city"
-                value={formData.city}
-                onChange={handleChange}
-                disabled={isSubmitting}
-                autoComplete="off"
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="state" className="form-label">
-                State / Province
-              </label>
-              <input
-                type="text"
-                id="state"
-                name="state"
-                className="form-input"
-                placeholder="Optional"
-                value={formData.state}
-                onChange={handleChange}
-                disabled={isSubmitting}
-                autoComplete="off"
-              />
-            </div>
-
-            <div className="form-group form-group-full">
-              <label htmlFor="country" className="form-label">
-                Country
-              </label>
-              <select
-                id="country"
-                name="country"
-                className="form-select"
-                value={formData.country}
-                onChange={handleChange}
-                disabled={isSubmitting}
-              >
-                <option value="">Select country</option>
-                {COUNTRIES.map(country => (
-                  <option key={country} value={country}>{country}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-        )}
-
-        {/* Manual Coordinates Fields */}
-        {locationMode === 'coordinates' && (
-          <div className="form-grid">
-            <div className="form-group">
-              <label htmlFor="latitude" className="form-label">
-                Latitude
-              </label>
-              <input
-                type="number"
-                id="latitude"
-                name="latitude"
-                className="form-input"
-                placeholder="e.g., 40.7128"
-                value={formData.latitude}
-                onChange={handleChange}
-                disabled={isSubmitting}
-                step="any"
-                min="-90"
-                max="90"
-              />
-              <span className="form-hint">-90 to 90</span>
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="longitude" className="form-label">
-                Longitude
-              </label>
-              <input
-                type="number"
-                id="longitude"
-                name="longitude"
-                className="form-input"
-                placeholder="e.g., -74.0060"
-                value={formData.longitude}
-                onChange={handleChange}
-                disabled={isSubmitting}
-                step="any"
-                min="-180"
-                max="180"
-              />
-              <span className="form-hint">-180 to 180</span>
-            </div>
-
-            <div className="form-group form-group-full">
-              <label htmlFor="locationName" className="form-label">
-                Location Name (optional)
-              </label>
-              <input
-                type="text"
-                id="locationName"
-                name="locationName"
-                className="form-input"
-                placeholder="e.g., New York City, USA"
-                value={formData.locationName}
-                onChange={handleChange}
-                disabled={isSubmitting}
-                autoComplete="off"
-              />
-              <span className="form-hint">Display name for your pin</span>
-            </div>
-          </div>
-        )}
+        </div>
       </div>
 
       {/* Personal Info Section - After Pet and Location */}

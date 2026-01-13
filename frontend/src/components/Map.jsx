@@ -45,6 +45,14 @@ const Map = () => {
   
   const { members, newlyAddedMember, memberCount } = useApp();
 
+  // Scroll to form function
+  const scrollToForm = () => {
+    document.getElementById('form-section')?.scrollIntoView({ 
+      behavior: 'smooth',
+      block: 'start'
+    });
+  };
+
   // Initialize map
   useEffect(() => {
     if (!MAPBOX_TOKEN) {
@@ -231,7 +239,15 @@ const Map = () => {
         <div className="legend-title">Pet Types</div>
         <div className="legend-items">
           {Object.entries(PET_ICONS).slice(0, 6).map(([type, icon]) => (
-            <div key={type} className="legend-item">
+            <div 
+              key={type} 
+              className="legend-item clickable"
+              onClick={scrollToForm}
+              role="button"
+              tabIndex={0}
+              onKeyPress={(e) => e.key === 'Enter' && scrollToForm()}
+              title="Click to add your pet"
+            >
               <span className="legend-icon" style={{ background: PET_COLORS[type] }}>{icon}</span>
               <span className="legend-label">{type}</span>
             </div>

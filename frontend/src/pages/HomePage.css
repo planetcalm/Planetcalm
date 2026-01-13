@@ -511,6 +511,24 @@
   margin: 0 auto;
 }
 
+/* Map Title */
+.map-title {
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: var(--space-xl);
+  padding: 0 var(--space-md);
+  line-height: 1.4;
+  animation: fadeInUp 0.6s ease-out;
+}
+
+@media (max-width: 768px) {
+  .map-title {
+    font-size: 1.125rem;
+  }
+}
+
 .map-caption {
   text-align: center;
   margin-top: var(--space-xl);

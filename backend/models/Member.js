@@ -78,6 +78,12 @@ const memberSchema = new mongoose.Schema({
     lowercase: true,
     match: [/^\S+@\S+\.\S+$/, 'Please enter a valid email']
   },
+  // Affiliate tracking ID (am_id from URL parameter)
+  affiliateId: {
+    type: String,
+    trim: true,
+    maxlength: [100, 'Affiliate ID cannot exceed 100 characters']
+  },
   // Metadata
   source: {
     type: String,
