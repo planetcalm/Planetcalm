@@ -111,7 +111,15 @@ const PinForm = ({ onSuccess }) => {
 
     try {
       // Prepare data with affiliate ID
+      console.log('');
+      console.log('╔════════════════════════════════════════════════════════╗');
+      console.log('║        📤 FORM SUBMISSION: STARTING                   ║');
+      console.log('╚════════════════════════════════════════════════════════╝');
+      console.log('');
+      
+      console.log('🔍 Retrieving affiliate ID for submission...');
       const affiliateId = getAffiliateId();
+      console.log('📊 Retrieved am_id:', affiliateId || '(none)');
       
       const submitData = {
         firstName: formData.firstName,
@@ -125,10 +133,19 @@ const PinForm = ({ onSuccess }) => {
         am_id: affiliateId || '' // Include affiliate ID if available
       };
 
-      // Log for debugging (remove in production)
+      console.log('');
+      console.log('=== COMPLETE SUBMISSION PAYLOAD ===');
+      console.log(JSON.stringify(submitData, null, 2));
+      console.log('===================================');
+      console.log('');
+      
       if (affiliateId) {
-        console.log('📊 Submitting with affiliate ID:', affiliateId);
+        console.log('✅ Form includes affiliate ID:', affiliateId);
+      } else {
+        console.log('⚠️ No affiliate ID - form will submit with empty am_id');
       }
+      
+      console.log('🚀 Sending to backend...');
 
       const result = await addMember(submitData);
       

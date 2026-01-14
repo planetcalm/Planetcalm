@@ -13,6 +13,12 @@ const GHL_WEBHOOK_URL = process.env.GHL_WEBHOOK_URL || 'https://services.leadcon
  */
 const sendToGoHighLevel = async (member) => {
   try {
+    console.log('');
+    console.log('╔════════════════════════════════════════════════════════╗');
+    console.log('║     🌐 GOHIGHLEVEL WEBHOOK: PREPARING                ║');
+    console.log('╚════════════════════════════════════════════════════════╝');
+    console.log('');
+    
     // Only send if there's an email (GHL needs an identifier)
     if (!member.email) {
       console.log('⚠️ Skipping GHL webhook - no email provided');
@@ -32,12 +38,20 @@ const sendToGoHighLevel = async (member) => {
       am_id: member.affiliateId || '' // Include affiliate ID for tracking
     };
 
+    console.log('=== COMPLETE WEBHOOK PAYLOAD ===');
+    console.log(JSON.stringify(payload, null, 2));
+    console.log('================================');
+    console.log('');
+
     // Log affiliate tracking if present
     if (member.affiliateId) {
-      console.log('📊 Including affiliate ID in GHL webhook:', member.affiliateId);
+      console.log('✅ Affiliate ID WILL BE SENT to GHL:', member.affiliateId);
+    } else {
+      console.log('⚠️ NO AFFILIATE ID - sending empty string to GHL');
     }
-
-    console.log('📤 Sending to GoHighLevel:', payload);
+    
+    console.log('🎯 Webhook URL:', GHL_WEBHOOK_URL);
+    console.log('📤 Sending POST request...');
 
     // Send POST to GoHighLevel webhook
     const response = await axios.post(GHL_WEBHOOK_URL, payload, {
@@ -45,10 +59,24 @@ const sendToGoHighLevel = async (member) => {
       timeout: 10000 // 10 second timeout
     });
 
-    console.log('✅ GoHighLevel webhook successful:', response.status);
+    console.log('');
+    console.log('╔════════════════════════════════════════════════════════╗');
+    console.log('║     ✅ GOHIGHLEVEL WEBHOOK: SUCCESS                   ║');
+    console.log('║     Status: ' + response.status + '                                      ║');
+    console.log('╚════════════════════════════════════════════════════════╝');
+    console.log('');
   } catch (error) {
     // Log error but don't fail the member creation
-    console.error('❌ GoHighLevel webhook failed:', error.message);
+    console.error('');
+    console.error('╔════════════════════════════════════════════════════════╗');
+    console.error('║     ❌ GOHIGHLEVEL WEBHOOK: FAILED                    ║');
+    console.error('╚════════════════════════════════════════════════════════╝');
+    console.error('Error:', error.message);
+    if (error.response) {
+      console.error('Response status:', error.response.status);
+      console.error('Response data:', error.response.data);
+    }
+    console.error('');
   }
 };
 
@@ -148,8 +176,26 @@ const getRecentMembers = async (req, res) => {
  */
 const createMember = async (req, res) => {
   try {
+    console.log('');
+    console.log('╔════════════════════════════════════════════════════════╗');
+    console.log('║    📨 BACKEND: RECEIVED FORM SUBMISSION              ║');
+    console.log('╚════════════════════════════════════════════════════════╝');
+    console.log('');
+    
     const { firstName, email, petName, petType, petStatus, city, state, country, latitude, longitude, locationName, useCoordinates, am_id } = req.body;
 
+    console.log('🔍 Checking for am_id in request body...');
+    console.log('   am_id field value:', am_id);
+    console.log('   am_id type:', typeof am_id);
+    console.log('   am_id empty?:', !am_id);
+    
+    if (am_id) {
+      console.log('✅ AFFILIATE ID RECEIVED:', am_id);
+    } else {
+      console.log('⚠️ NO AFFILIATE ID in request');
+      console.log('Complete request body:', JSON.stringify(req.body, null, 2));
+    }
+    
     let finalLongitude, finalLatitude, locationData;
 
     // Check if using direct coordinates (GPS or manual entry)
@@ -216,6 +262,10 @@ const createMember = async (req, res) => {
     }
 
     // Create the member
+    console.log('');
+    console.log('💾 Creating member in database...');
+    console.log('   Including affiliateId:', am_id || '(none)');
+    
     const member = await Member.create({
       firstName,
       email,
@@ -231,9 +281,18 @@ const createMember = async (req, res) => {
       affiliateId: am_id || undefined // Store affiliate ID if provided
     });
 
+    console.log('✅ Member created in database');
+    console.log('   Member ID:', member._id);
+    console.log('   Stored affiliateId:', member.affiliateId || '(none)');
+
     // Log affiliate tracking
     if (am_id) {
-      console.log(`📊 Member created with affiliate ID: ${am_id}`);
+      console.log('');
+      console.log('╔════════════════════════════════════════════════════════╗');
+      console.log('║    ✅ AFFILIATE TRACKING: SUCCESS                     ║');
+      console.log('║    Value: ' + am_id.padEnd(44) + '║');
+      console.log('╚════════════════════════════════════════════════════════╝');
+      console.log('');
     }
 
     // Emit to all connected clients via WebSocket
@@ -241,6 +300,7 @@ const createMember = async (req, res) => {
     emitMemberCount();
 
     // Send to GoHighLevel (includes affiliate ID)
+    console.log('📤 Sending to GoHighLevel webhook...');
     await sendToGoHighLevel(member);
 
     console.log(`✅ New member created: ${petName} (${petType}) at [${finalLongitude}, ${finalLatitude}]`);
