@@ -12,7 +12,11 @@ const COOKIE_NAME = 'affiliate_id';
 const EXPIRY_DAYS = 30;
 
 /**
- * Extract am_id parameter from current URL
+ * Extract am_id parameter from current URL (query params OR hash fragment)
+ * Supports multiple formats to survive redirects:
+ * - ?am_id=value (standard query parameter)
+ * - #am_id=value (hash fragment - survives redirects)
+ * - #/path?am_id=value (hash with query)
  * @returns {string|null} The affiliate ID or null if not found
  */
 export const captureAffiliateId = () => {
@@ -20,21 +24,58 @@ export const captureAffiliateId = () => {
   console.log('🔍 Page loaded, checking for am_id...');
   console.log('📍 Current URL:', window.location.href);
   console.log('🔎 Search params string:', window.location.search);
+  console.log('🔗 Hash fragment:', window.location.hash);
   
   try {
+    let affiliateId = null;
+    
+    // METHOD 1: Check standard URL query parameters
+    console.log('1️⃣ Checking URL query parameters...');
     const urlParams = new URLSearchParams(window.location.search);
     console.log('📊 All URL parameters:', Object.fromEntries(urlParams.entries()));
     
-    const affiliateId = urlParams.get(AFFILIATE_PARAM);
-    console.log(`🎯 Extracted ${AFFILIATE_PARAM}:`, affiliateId);
+    affiliateId = urlParams.get(AFFILIATE_PARAM);
+    console.log(`   Query param ${AFFILIATE_PARAM}:`, affiliateId);
     
     if (affiliateId && affiliateId.trim()) {
-      console.log('✅ SUCCESS: Affiliate ID captured from URL:', affiliateId);
+      console.log('✅ SUCCESS: Affiliate ID found in query parameters:', affiliateId);
       console.log('🔢 Length:', affiliateId.length, 'characters');
       return affiliateId.trim();
     }
     
-    console.log('⚠️ No am_id found in URL parameters');
+    // METHOD 2: Check hash fragment (survives redirects!)
+    console.log('2️⃣ Checking hash fragment (redirect-safe)...');
+    if (window.location.hash) {
+      // Remove the leading # and check for am_id
+      const hash = window.location.hash.substring(1);
+      console.log('   Raw hash:', hash);
+      
+      // Try parsing as query string (e.g., #am_id=value or #?am_id=value)
+      const hashQuery = hash.startsWith('?') ? hash.substring(1) : hash;
+      const hashParams = new URLSearchParams(hashQuery);
+      
+      affiliateId = hashParams.get(AFFILIATE_PARAM);
+      console.log(`   Hash param ${AFFILIATE_PARAM}:`, affiliateId);
+      
+      if (affiliateId && affiliateId.trim()) {
+        console.log('✅ SUCCESS: Affiliate ID found in hash fragment:', affiliateId);
+        console.log('🔢 Length:', affiliateId.length, 'characters');
+        console.log('🛡️ (Hash fragments survive redirects - smart!')
+        
+        // Clean the hash from URL after capturing (optional, keeps URL clean)
+        if (window.history && window.history.replaceState) {
+          const cleanUrl = window.location.pathname + window.location.search;
+          window.history.replaceState({}, document.title, cleanUrl);
+          console.log('🧹 Cleaned hash from URL');
+        }
+        
+        return affiliateId.trim();
+      }
+    } else {
+      console.log('   No hash fragment present');
+    }
+    
+    console.log('⚠️ No am_id found in URL parameters or hash fragment');
     return null;
   } catch (error) {
     console.error('❌ CRITICAL ERROR capturing affiliate ID:', error);
