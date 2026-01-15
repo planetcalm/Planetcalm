@@ -56,19 +56,46 @@ const HomePage = () => {
               </button>
               <button 
                 onClick={() => {
-                  if (navigator.share) {
+                  const url = 'https://planetcalm.co';
+                  if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(url).then(() => {
+                      alert('Link copied! Share https://planetcalm.co with your friends 🐾');
+                    }).catch(() => {
+                      if (navigator.share) {
+                        navigator.share({
+                          title: 'Planet Calm',
+                          text: 'I just added my pet to Planet Calm! Join the movement 🐾',
+                          url: url
+                        });
+                      }
+                    });
+                  } else if (navigator.share) {
                     navigator.share({
                       title: 'Planet Calm',
                       text: 'I just added my pet to Planet Calm! Join the movement 🐾',
-                      url: window.location.href
+                      url: url
                     });
                   } else {
-                    scrollToForm();
+                    // Fallback for older browsers
+                    const textArea = document.createElement('textarea');
+                    textArea.value = url;
+                    textArea.style.position = 'fixed';
+                    textArea.style.left = '-999999px';
+                    document.body.appendChild(textArea);
+                    textArea.focus();
+                    textArea.select();
+                    try {
+                      document.execCommand('copy');
+                      alert('Link copied! Share https://planetcalm.co with your friends 🐾');
+                    } catch (err) {
+                      alert('Please copy this link: https://planetcalm.co');
+                    }
+                    document.body.removeChild(textArea);
                   }
                 }} 
                 className="banner-btn banner-btn-secondary"
               >
-                Share Map
+                Copy Link
               </button>
             </div>
           </div>
