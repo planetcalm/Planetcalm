@@ -55,25 +55,32 @@ const HomePage = () => {
                 Add Another Pet
               </button>
               <button 
-                onClick={() => {
+                onClick={(e) => {
                   const url = 'https://planetcalm.co';
+                  const button = e.currentTarget;
+                  const originalText = button.textContent;
+                  
                   if (navigator.clipboard && navigator.clipboard.writeText) {
                     navigator.clipboard.writeText(url).then(() => {
-                      alert('Link copied! Share https://planetcalm.co with your friends 🐾');
+                      button.textContent = 'Copied! ✓';
+                      setTimeout(() => button.textContent = originalText, 2000);
                     }).catch(() => {
-                      if (navigator.share) {
-                        navigator.share({
-                          title: 'Planet Calm',
-                          text: 'I just added my pet to Planet Calm! Join the movement 🐾',
-                          url: url
-                        });
+                      // Fallback
+                      const textArea = document.createElement('textarea');
+                      textArea.value = url;
+                      textArea.style.position = 'fixed';
+                      textArea.style.left = '-999999px';
+                      document.body.appendChild(textArea);
+                      textArea.focus();
+                      textArea.select();
+                      try {
+                        document.execCommand('copy');
+                        button.textContent = 'Copied! ✓';
+                        setTimeout(() => button.textContent = originalText, 2000);
+                      } catch (err) {
+                        console.error('Failed to copy:', err);
                       }
-                    });
-                  } else if (navigator.share) {
-                    navigator.share({
-                      title: 'Planet Calm',
-                      text: 'I just added my pet to Planet Calm! Join the movement 🐾',
-                      url: url
+                      document.body.removeChild(textArea);
                     });
                   } else {
                     // Fallback for older browsers
@@ -86,9 +93,10 @@ const HomePage = () => {
                     textArea.select();
                     try {
                       document.execCommand('copy');
-                      alert('Link copied! Share https://planetcalm.co with your friends 🐾');
+                      button.textContent = 'Copied! ✓';
+                      setTimeout(() => button.textContent = originalText, 2000);
                     } catch (err) {
-                      alert('Please copy this link: https://planetcalm.co');
+                      console.error('Failed to copy:', err);
                     }
                     document.body.removeChild(textArea);
                   }

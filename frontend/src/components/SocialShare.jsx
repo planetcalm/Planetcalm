@@ -39,8 +39,9 @@ const CopyIcon = () => (
 );
 
 const SocialShare = ({ title = "Share Planet Calm with others", className = "" }) => {
-  const shareUrl = window.location.origin;
+  const shareUrl = 'https://planetcalm.co';
   const shareText = "I just joined Planet Calm - a global movement restoring peace to pets and their people. Add your pin to the map! 🐾🌍";
+  const [copyButtonText, setCopyButtonText] = React.useState('Copy Link');
   
   const socialLinks = [
     {
@@ -88,9 +89,25 @@ const SocialShare = ({ title = "Share Planet Calm with others", className = "" }
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(shareUrl).then(() => {
-      alert('Link copied to clipboard! 🎉');
+      setCopyButtonText('Copied! ✓');
+      setTimeout(() => setCopyButtonText('Copy Link'), 2000);
     }).catch(() => {
-      alert('Link: ' + shareUrl);
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = shareUrl;
+      textArea.style.position = 'fixed';
+      textArea.style.left = '-999999px';
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        setCopyButtonText('Copied! ✓');
+        setTimeout(() => setCopyButtonText('Copy Link'), 2000);
+      } catch (err) {
+        console.error('Failed to copy:', err);
+      }
+      document.body.removeChild(textArea);
     });
   };
 
@@ -123,7 +140,7 @@ const SocialShare = ({ title = "Share Planet Calm with others", className = "" }
           <span className="social-icon">
             <CopyIcon />
           </span>
-          <span className="social-name">Copy Link</span>
+          <span className="social-name">{copyButtonText}</span>
         </button>
       </div>
     </div>
