@@ -293,6 +293,10 @@
   transform: translateX(-50%);
   z-index: 20;
   animation: fadeInDown 0.8s ease-out 0.5s both;
+  display: flex;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .map-cta-button-float {
@@ -321,6 +325,17 @@
 
 .map-cta-button-float:active {
   transform: translateY(-1px) scale(1.02);
+}
+
+.map-cta-button-done {
+  background: #13c6c8 !important;
+  box-shadow: 0 8px 25px rgba(19, 198, 200, 0.4);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.map-cta-button-done:hover {
+  background: #10b0b2 !important;
+  box-shadow: 0 12px 30px rgba(19, 198, 200, 0.5);
 }
 
 .cta-icon {

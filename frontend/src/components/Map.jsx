@@ -255,18 +255,6 @@ const Map = () => {
         </div>
       </div>
 
-      {/* New member notification */}
-      {newlyAddedMember && (
-        <div className="new-member-toast show">
-          <span className="toast-emoji">{PET_ICONS[newlyAddedMember.petType] || '🐾'}</span>
-          <div className="toast-content">
-            <span className="toast-title">Welcome!</span>
-            <span className="toast-text">
-              {newlyAddedMember.petName} just joined!
-            </span>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

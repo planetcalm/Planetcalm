@@ -198,6 +198,11 @@
    Popup Styles - Colorful
    ===================================================== */
 
+/* Ensure popups appear above all markers */
+.mapboxgl-popup {
+  z-index: 1000 !important;
+}
+
 .mapboxgl-popup-content {
   padding: 0 !important;
   border-radius: 16px !important;

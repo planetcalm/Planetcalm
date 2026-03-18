@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { getAffiliateId } from '../utils/affiliateTracking';
-import SocialShare from './SocialShare';
 import './PinForm.css';
 
 const PET_TYPES = [
@@ -52,7 +51,6 @@ const PinForm = ({ onSuccess }) => {
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -150,20 +148,19 @@ const PinForm = ({ onSuccess }) => {
       const result = await addMember(submitData);
       
       if (result.success) {
-        setSuccess(true);
-        setFormData({
-          firstName: '',
-          email: '',
+        // Reset form but keep name and email for adding another pet
+        setFormData(prev => ({
+          ...prev,
           petName: '',
           petType: '',
           petStatus: 'with-you',
           city: '',
           state: '',
           country: ''
-        });
+        }));
         onSuccess?.();
         
-        // Scroll to map
+        // Scroll to map to see the new pin
         setTimeout(() => {
           document.getElementById('map-section')?.scrollIntoView({ 
             behavior: 'smooth',
@@ -179,34 +176,6 @@ const PinForm = ({ onSuccess }) => {
       setIsSubmitting(false);
     }
   };
-
-  if (success) {
-    return (
-      <div className="form-success">
-        <div className="success-icon">🌍</div>
-        <h3>Your Pin Has Been Placed!</h3>
-        <p>Welcome to the movement. Scroll up to see your pin on the map!</p>
-        
-        <div className="success-actions">
-          <button 
-            className="btn btn-primary"
-            onClick={() => setSuccess(false)}
-          >
-            📍 Add Another Pin
-          </button>
-        </div>
-
-        <div className="success-divider">
-          <span>Spread the Word</span>
-        </div>
-        
-        <SocialShare 
-          title="Share Planet Calm with others"
-          className="compact"
-        />
-      </div>
-    );
-  }
 
   return (
     <form className="pin-form" onSubmit={handleSubmit}>

@@ -5,7 +5,7 @@ import { useApp } from '../context/AppContext';
 import './HomePage.css';
 
 const HomePage = () => {
-  const { memberCount, isConnected, newlyAddedMember } = useApp();
+  const { memberCount, isConnected } = useApp();
 
   const scrollToForm = (e) => {
     e.preventDefault();
@@ -30,84 +30,16 @@ const HomePage = () => {
       <section className="map-section map-section-compact" id="map-section">
         <div className="map-bg-pattern"></div>
             
-        {/* Floating CTA on Map - Show only if no new member */}
-        {!newlyAddedMember && (
-          <div className="map-cta-overlay">
-            <a href="#form-section" onClick={scrollToForm} className="map-cta-button-float">
-              <span className="cta-icon">📍</span>
-              <span className="cta-text">Add Your Pet to the Map</span>
-            </a>
-          </div>
-        )}
-        
-        {/* Success Banner - Show after adding pet */}
-        {newlyAddedMember && (
-          <div className="map-success-banner">
-            <div className="success-banner-content">
-              <span className="success-banner-icon">🎉</span>
-              <div className="success-banner-text">
-                <strong>Pin Added!</strong>
-                <span>Your pet is now on the map</span>
-              </div>
-            </div>
-            <div className="success-banner-actions">
-              <button onClick={scrollToForm} className="banner-btn banner-btn-primary">
-                Add Another Pet
-              </button>
-              <button 
-                onClick={(e) => {
-                  const url = 'https://planetcalm.co';
-                  const button = e.currentTarget;
-                  const originalText = button.textContent;
-                  
-                  if (navigator.clipboard && navigator.clipboard.writeText) {
-                    navigator.clipboard.writeText(url).then(() => {
-                      button.textContent = 'Copied! ✓';
-                      setTimeout(() => button.textContent = originalText, 2000);
-                    }).catch(() => {
-                      // Fallback
-                      const textArea = document.createElement('textarea');
-                      textArea.value = url;
-                      textArea.style.position = 'fixed';
-                      textArea.style.left = '-999999px';
-                      document.body.appendChild(textArea);
-                      textArea.focus();
-                      textArea.select();
-                      try {
-                        document.execCommand('copy');
-                        button.textContent = 'Copied! ✓';
-                        setTimeout(() => button.textContent = originalText, 2000);
-                      } catch (err) {
-                        console.error('Failed to copy:', err);
-                      }
-                      document.body.removeChild(textArea);
-                    });
-                  } else {
-                    // Fallback for older browsers
-                    const textArea = document.createElement('textarea');
-                    textArea.value = url;
-                    textArea.style.position = 'fixed';
-                    textArea.style.left = '-999999px';
-                    document.body.appendChild(textArea);
-                    textArea.focus();
-                    textArea.select();
-                    try {
-                      document.execCommand('copy');
-                      button.textContent = 'Copied! ✓';
-                      setTimeout(() => button.textContent = originalText, 2000);
-                    } catch (err) {
-                      console.error('Failed to copy:', err);
-                    }
-                    document.body.removeChild(textArea);
-                  }
-                }} 
-                className="banner-btn banner-btn-secondary"
-              >
-                Copy Link
-              </button>
-            </div>
-          </div>
-        )}
+        {/* Floating CTA on Map */}
+        <div className="map-cta-overlay">
+          <a href="#form-section" onClick={scrollToForm} className="map-cta-button-float">
+            <span className="cta-icon">📍</span>
+            <span className="cta-text">Add Your Pet(s) to the Map</span>
+          </a>
+          <a href="https://planetcalm.co/map-thankyou" className="map-cta-button-float map-cta-button-done">
+            I'm done
+          </a>
+        </div>
         
         <div className="container">
           {/* Map Title */}

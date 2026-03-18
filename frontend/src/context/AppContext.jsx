@@ -27,6 +27,7 @@ export const AppProvider = ({ children }) => {
           id: member.id,
           petName: member.petName,
           petType: member.petType,
+          petStatus: member.petStatus || 'with-you',
           location: member.location?.formatted || member.location,
           createdAt: member.createdAt,
           isNew: true
