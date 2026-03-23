@@ -138,12 +138,13 @@ const Map = () => {
         </div>
       `;
       
-      // Create popup
+      // Create popup - anchor 'top' keeps popup below pin (better for mobile viewport)
       const popup = new mapboxgl.Popup({ 
         offset: 25, 
+        anchor: 'top',
         className: 'pet-popup',
         closeButton: true,
-        maxWidth: '250px'
+        maxWidth: '280px'
       }).setHTML(`
         <div class="popup-content">
           <div class="popup-icon" style="background: ${PET_COLORS[petType] || PET_COLORS.Other}">

@@ -11,6 +11,7 @@ export const AppProvider = ({ children }) => {
   const [error, setError] = useState(null);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [newlyAddedMember, setNewlyAddedMember] = useState(null);
+  const [hasSubmittedPetThisSession, setHasSubmittedPetThisSession] = useState(false);
 
   const handleNewMember = useCallback((member) => {
     setMembers(prev => {
@@ -80,6 +81,7 @@ export const AppProvider = ({ children }) => {
       const response = await memberAPI.create(memberData);
       if (response.success) {
         setShowSuccessMessage(true);
+        setHasSubmittedPetThisSession(true);
         setTimeout(() => setShowSuccessMessage(false), 5000);
         return { success: true, data: response.data };
       }
@@ -97,6 +99,7 @@ export const AppProvider = ({ children }) => {
     isConnected,
     showSuccessMessage,
     newlyAddedMember,
+    hasSubmittedPetThisSession,
     addMember,
     refreshMembers: fetchMembers,
   };

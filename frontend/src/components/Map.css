@@ -557,3 +557,62 @@
     transform: translateX(0) translateY(0);
   }
 }
+
+/* =====================================================
+   Map Popup - Mobile
+   ===================================================== */
+
+@media (max-width: 768px) {
+  .mapboxgl-popup-content {
+    min-width: 180px;
+    max-width: min(280px, calc(100vw - 32px)) !important;
+  }
+  
+  .popup-content {
+    padding: 14px;
+  }
+  
+  .popup-icon {
+    width: 48px;
+    height: 48px;
+    font-size: 1.5rem;
+    margin-bottom: 8px;
+  }
+  
+  .popup-name {
+    font-size: 1.2rem;
+  }
+  
+  .popup-badge,
+  .popup-location {
+    font-size: 0.75rem;
+  }
+  
+  .mapboxgl-popup-close-button {
+    font-size: 24px;
+    padding: 12px 16px;
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    right: 4px;
+    top: 4px;
+  }
+}
+
+@media (max-width: 480px) {
+  .map-counter {
+    top: 12px;
+    left: 12px;
+    padding: 10px 14px;
+  }
+  
+  .counter-number {
+    font-size: 1.5rem;
+  }
+  
+  .counter-label {
+    font-size: 0.65rem;
+  }
+}

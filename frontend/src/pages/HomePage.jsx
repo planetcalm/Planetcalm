@@ -5,7 +5,7 @@ import { useApp } from '../context/AppContext';
 import './HomePage.css';
 
 const HomePage = () => {
-  const { memberCount, isConnected } = useApp();
+  const { memberCount, isConnected, hasSubmittedPetThisSession } = useApp();
 
   const scrollToForm = (e) => {
     e.preventDefault();
@@ -34,11 +34,15 @@ const HomePage = () => {
         <div className="map-cta-overlay">
           <a href="#form-section" onClick={scrollToForm} className="map-cta-button-float">
             <span className="cta-icon">📍</span>
-            <span className="cta-text">Add Your Pet(s) to the Map</span>
+            <span className="cta-text">
+              {hasSubmittedPetThisSession ? 'Add Another Pet' : 'Add Your Pet(s) to the Map'}
+            </span>
           </a>
-          <a href="https://planetcalm.co/map-thankyou" className="map-cta-button-float map-cta-button-done">
-            I'm done
-          </a>
+          {hasSubmittedPetThisSession && (
+            <a href="https://planetcalm.co/map-thankyou" className="map-cta-button-float map-cta-button-done">
+              I'm done
+            </a>
+          )}
         </div>
         
         <div className="container">
