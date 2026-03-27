@@ -8,6 +8,29 @@ const axios = require('axios');
 
 const MAPBOX_GEOCODING_URL = 'https://api.mapbox.com/geocoding/v5/mapbox.places';
 
+/** Map form country names → ISO 3166-1 alpha-2 for Mapbox (reduces e.g. Paris, France → Paris TX) */
+const COUNTRY_TO_ISO2 = {
+  'united states': 'us',
+  usa: 'us',
+  canada: 'ca',
+  'united kingdom': 'gb',
+  uk: 'gb',
+  australia: 'au',
+  germany: 'de',
+  france: 'fr',
+  india: 'in',
+  brazil: 'br',
+  japan: 'jp',
+  mexico: 'mx',
+  spain: 'es',
+  italy: 'it',
+  netherlands: 'nl',
+  'south africa': 'za',
+  'new zealand': 'nz',
+  pakistan: 'pk',
+  other: ''
+};
+
 /**
  * Add small random offset to coordinates to prevent pin stacking
  * The jitter is small enough to keep pins in the same visual area
@@ -48,13 +71,16 @@ const geocodeLocation = async (location, applyJitter = true) => {
     
     console.log(`🔍 Geocoding: ${searchQuery}`);
     
+    const countryIso = COUNTRY_TO_ISO2[(country || '').toLowerCase().trim()] || '';
+
     const response = await axios.get(
       `${MAPBOX_GEOCODING_URL}/${encodeURIComponent(searchQuery)}.json`,
       {
         params: {
           access_token: process.env.MAPBOX_ACCESS_TOKEN,
           types: 'place,locality,region', // Focus on cities and regions
-          limit: 1
+          limit: 1,
+          ...(countryIso ? { country: countryIso } : {})
         }
       }
     );

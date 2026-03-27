@@ -285,18 +285,22 @@
   height: 50px;
 }
 
-/* Map CTA Overlay */
+/* Map CTAs — in flow after headline, before map (all breakpoints) */
 .map-cta-overlay {
-  position: absolute;
-  top: 13rem;
-  left: 50%;
-  transform: translateX(-50%);
+  position: relative;
   z-index: 20;
-  animation: fadeInDown 0.8s ease-out 0.5s both;
   display: flex;
   gap: var(--space-md);
   flex-wrap: wrap;
   justify-content: center;
+  margin: var(--space-lg) 0 var(--space-xl);
+  animation: fadeInDown 0.8s ease-out 0.5s both;
+}
+
+@media (min-width: 769px) {
+  .map-cta-overlay {
+    margin: var(--space-xl) 0 var(--space-2xl);
+  }
 }
 
 .map-cta-button-float {
@@ -350,38 +354,21 @@
   .map-section-compact {
     padding: var(--space-md) 0 var(--space-3xl);
   }
-  
-  /* On mobile: move CTA below map so it doesn't overlap */
-  .map-section {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .map-section .container {
-    order: 1;
-  }
-  
+
   .map-cta-overlay {
-    position: static;
-    order: 0;
-    transform: none;
-    top: auto;
-    left: auto;
-    margin-top: 0;
-    margin-bottom: var(--space-md);
-    padding: 0 var(--space-md);
-    animation: none;
+    margin: var(--space-md) 0 var(--space-lg);
+    padding: 0 var(--space-sm);
     flex-direction: column;
     gap: var(--space-sm);
     align-items: stretch;
   }
-  
+
   .map-cta-button-float {
     justify-content: center;
     font-size: 0.95rem;
     padding: var(--space-sm) var(--space-lg);
   }
-  
+
   .cta-icon {
     font-size: 1.1rem;
   }

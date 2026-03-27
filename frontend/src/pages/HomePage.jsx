@@ -29,27 +29,26 @@ const HomePage = () => {
       {/* Map Section */}
       <section className="map-section map-section-compact" id="map-section">
         <div className="map-bg-pattern"></div>
-            
-        {/* Floating CTA on Map */}
-        <div className="map-cta-overlay">
-          <a href="#form-section" onClick={scrollToForm} className="map-cta-button-float">
-            <span className="cta-icon">📍</span>
-            <span className="cta-text">
-              {hasSubmittedPetThisSession ? 'Add Another Pet' : 'Add Your Pet(s) to the Map'}
-            </span>
-          </a>
-          {hasSubmittedPetThisSession && (
-            <a href="https://planetcalm.co/map-thankyou" className="map-cta-button-float map-cta-button-done">
-              I'm done
-            </a>
-          )}
-        </div>
         
         <div className="container">
           {/* Map Title */}
           <h2 className="map-title">
-            Start by Honoring Your Pet - Click the button below to add your pet to the map
+            Start by Honoring Your Pet - Click the button to add your pet to the map
           </h2>
+
+          <div className="map-cta-overlay">
+            <a href="#form-section" onClick={scrollToForm} className="map-cta-button-float">
+              <span className="cta-icon">📍</span>
+              <span className="cta-text">
+                {hasSubmittedPetThisSession ? 'Add Another Pet' : 'Add Your Pet(s) to the Map'}
+              </span>
+            </a>
+            {hasSubmittedPetThisSession && (
+              <a href="https://planetcalm.co/map-thankyou" className="map-cta-button-float map-cta-button-done">
+                I'm done
+              </a>
+            )}
+          </div>
           
           <Map />
           

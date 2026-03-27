@@ -15,7 +15,9 @@ export const AppProvider = ({ children }) => {
 
   const handleNewMember = useCallback((member) => {
     setMembers(prev => {
-      const exists = prev.some(m => m.properties?.id === member.id);
+      const exists = prev.some(
+        (m) => String(m.properties?.id) === String(member.id)
+      );
       if (exists) return prev;
       
       const newFeature = {
@@ -39,11 +41,8 @@ export const AppProvider = ({ children }) => {
     });
     
     setMemberCount(prev => prev + 1);
-    setNewlyAddedMember(member);
-    
-    setTimeout(() => {
-      setNewlyAddedMember(null);
-    }, 5000);
+    // Do not fly the map here — socket events are global. Fly-to is set only from
+    // addMember() success so each user zooms to their own submission only.
   }, []);
 
   const handleMemberCount = useCallback((count) => {
@@ -83,6 +82,22 @@ export const AppProvider = ({ children }) => {
         setShowSuccessMessage(true);
         setHasSubmittedPetThisSession(true);
         setTimeout(() => setShowSuccessMessage(false), 5000);
+        const d = response.data;
+        if (d?.coordinates && d?.id != null) {
+          const { lat, lng } = d.coordinates;
+          const lngNum = typeof lng === 'number' ? lng : parseFloat(lng);
+          const latNum = typeof lat === 'number' ? lat : parseFloat(lat);
+          if (!Number.isNaN(lngNum) && !Number.isNaN(latNum)) {
+            setNewlyAddedMember({
+              id: d.id,
+              coordinates: {
+                type: 'Point',
+                coordinates: [lngNum, latNum],
+              },
+            });
+            setTimeout(() => setNewlyAddedMember(null), 10000);
+          }
+        }
         return { success: true, data: response.data };
       }
       return { success: false, message: response.message };

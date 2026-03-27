@@ -117,11 +117,13 @@ const Map = () => {
 
     // Add/update markers for each member
     members.forEach(member => {
-      const id = member.properties.id;
-      currentMemberIds.add(id);
+      const id = member.properties?.id;
+      if (id == null) return;
+      const idKey = String(id);
+      currentMemberIds.add(idKey);
       
       // Skip if marker already exists
-      if (markersRef.current[id]) return;
+      if (markersRef.current[idKey]) return;
       
       const coords = member.geometry.coordinates;
       const { petName, petType, petStatus, location } = member.properties;
@@ -164,7 +166,7 @@ const Map = () => {
         .setPopup(popup)
         .addTo(map.current);
       
-      markersRef.current[id] = marker;
+      markersRef.current[idKey] = marker;
     });
 
     // Remove markers that no longer exist
@@ -176,30 +178,40 @@ const Map = () => {
     });
   }, [members, mapLoaded]);
 
-  // Fly to new member with animation
+  // Fly only to the pin this client just created (set from API response in AppContext)
   useEffect(() => {
     if (!newlyAddedMember || !mapLoaded || !map.current) return;
 
     const coords = newlyAddedMember.coordinates?.coordinates;
-    if (coords) {
-      map.current.flyTo({
-        center: coords,
-        zoom: 8,
-        duration: 2000,
-        essential: true
-      });
+    if (!coords || coords.length < 2) return;
 
-      // Add special animation to new marker
-      const id = newlyAddedMember._id;
-      setTimeout(() => {
-        const marker = markersRef.current[id];
-        if (marker) {
-          const el = marker.getElement();
-          el.classList.add('new-marker');
-          setTimeout(() => el.classList.remove('new-marker'), 3000);
-        }
-      }, 500);
-    }
+    const [lng, lat] = coords;
+    if (!Number.isFinite(lng) || !Number.isFinite(lat)) return;
+
+    map.current.flyTo({
+      center: [lng, lat],
+      zoom: 12,
+      duration: 2000,
+      essential: true,
+    });
+
+    const id = newlyAddedMember.id ?? newlyAddedMember._id;
+    const idStr = id != null ? String(id) : null;
+
+    let pulsed = false;
+    const tryPulseNewMarker = () => {
+      if (pulsed) return;
+      const marker = idStr ? markersRef.current[idStr] : null;
+      if (!marker) return;
+      pulsed = true;
+      const el = marker.getElement();
+      el.classList.add('new-marker');
+      setTimeout(() => el.classList.remove('new-marker'), 3000);
+    };
+
+    [500, 1200, 2500].forEach((ms) => {
+      setTimeout(tryPulseNewMarker, ms);
+    });
   }, [newlyAddedMember, mapLoaded]);
 
   // Error state
